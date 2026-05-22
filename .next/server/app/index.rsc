@@ -1,0 +1,59 @@
+1:"$Sreact.fragment"
+3:I[9943,["874","static/chunks/874-c6deacd1014263c5.js","177","static/chunks/app/layout-3920ced9d82c8aab.js"],"default"]
+4:I[3360,["874","static/chunks/874-c6deacd1014263c5.js","177","static/chunks/app/layout-3920ced9d82c8aab.js"],"default"]
+5:I[5,["874","static/chunks/874-c6deacd1014263c5.js","177","static/chunks/app/layout-3920ced9d82c8aab.js"],"default"]
+6:I[7555,[],""]
+7:I[1901,["874","static/chunks/874-c6deacd1014263c5.js","39","static/chunks/app/error-632afb0a77989549.js"],"default"]
+8:I[1295,[],""]
+9:I[6874,["874","static/chunks/874-c6deacd1014263c5.js","177","static/chunks/app/layout-3920ced9d82c8aab.js"],""]
+a:I[7969,["874","static/chunks/874-c6deacd1014263c5.js","177","static/chunks/app/layout-3920ced9d82c8aab.js"],"default"]
+b:I[5149,["874","static/chunks/874-c6deacd1014263c5.js","177","static/chunks/app/layout-3920ced9d82c8aab.js"],"default"]
+c:I[3831,["874","static/chunks/874-c6deacd1014263c5.js","177","static/chunks/app/layout-3920ced9d82c8aab.js"],"default"]
+d:I[9243,["874","static/chunks/874-c6deacd1014263c5.js","177","static/chunks/app/layout-3920ced9d82c8aab.js"],""]
+e:I[894,[],"ClientPageRoot"]
+f:I[5788,["974","static/chunks/app/page-5bec8a89a0f4ef63.js"],"default"]
+12:I[9665,[],"OutletBoundary"]
+15:I[4911,[],"AsyncMetadataOutlet"]
+17:I[9665,[],"ViewportBoundary"]
+19:I[9665,[],"MetadataBoundary"]
+1b:I[6614,[],""]
+:HL["/_next/static/css/461c9eb47550978d.css","style"]
+2:T5ae,
+          :root {
+            --theme-primary: #e11d48;
+            --theme-secondary: #fb7185;
+            --theme-base: #0f0308;
+            --background: #0f0308;
+            --surface-1: #1a0510;
+            --surface-2: #260818;
+            --foreground: #fff1f2;
+            --text-2: #fda4af;
+            --border-default: rgba(225,29,72,0.15);
+            --border-strong: rgba(225,29,72,0.3);
+            --radius: 0.75rem;
+            --radius-lg: 1.25rem;
+            --radius-xl: 2rem;
+          }
+          body { font-family: 'Inter', system-ui, sans-serif !important; }
+          h1, h2, h3, .display { font-family: 'Calistoga', serif !important; letter-spacing: -0.02em; }
+          .glass {
+            background: rgba(15,3,8,0.65) !important;
+            border-color: rgba(225,29,72,0.12) !important;
+          }
+          /* Platform tag accent colours */
+          .platform-twitter  { color: #38bdf8; background: rgba(56,189,248,0.08); border-color: rgba(56,189,248,0.2); }
+          .platform-linkedin { color: #818cf8; background: rgba(129,140,248,0.08); border-color: rgba(129,140,248,0.2); }
+          .platform-instagram{ color: #f472b6; background: rgba(244,114,182,0.08); border-color: rgba(244,114,182,0.2); }
+          @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+          @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        0:{"P":null,"b":"4n7b69YRoCRWLzv4JAy50","p":"","c":["",""],"i":false,"f":[[["",{"children":["__PAGE__",{}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/461c9eb47550978d.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","suppressHydrationWarning":true,"children":[["$","head",null,{"children":[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"{\"@context\":\"https://schema.org\",\"@type\":\"SoftwareApplication\",\"name\":\"DraftCal\",\"url\":\"https://draftcal.app\",\"description\":\"Plan, generate, and schedule social media content with AI. One dashboard for all platforms.\",\"applicationCategory\":\"BusinessApplication\",\"operatingSystem\":\"Web\",\"offers\":{\"@type\":\"Offer\",\"price\":\"0\",\"priceCurrency\":\"USD\"}}"}}],["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"{\"@context\":\"https://schema.org\",\"@type\":\"FAQPage\",\"mainEntity\":[{\"@type\":\"Question\",\"name\":\"What is DraftCal?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"DraftCal is an AI-powered social media content calendar. Enter your brand or topic, select platforms, and AI generates a full month of posts with hooks, hashtags, and engagement tips.\"}},{\"@type\":\"Question\",\"name\":\"Is DraftCal free?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"Yes. DraftCal is free to use with 3 calendar generations per day. Pro plan ($10/mo) removes all limits.\"}},{\"@type\":\"Question\",\"name\":\"Which platforms does DraftCal support?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"DraftCal supports Twitter/X, LinkedIn, Instagram, TikTok, and Facebook — with platform-specific optimisation for each.\"}}]}"}}],["$","link",null,{"rel":"preconnect","href":"https://fonts.googleapis.com"}],["$","link",null,{"rel":"preconnect","href":"https://fonts.gstatic.com","crossOrigin":"anonymous"}],["$","link",null,{"href":"https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@400;500;600;700&display=swap","rel":"stylesheet"}],["$","style",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}]]}],["$","body",null,{"className":"flex flex-col min-h-screen","children":[["$","$L3",null,{}],["$","$L4",null,{}],["$","$L5",null,{"brand":{"name":"DraftCal","tagline":"Plan, generate, and schedule social media content with AI. One dashboard for all platforms.","icon":"📅","color":"#ec4899","url":"https://draftcal.app","navLinks":[{"label":"Home","href":"/"},{"label":"Calendar","href":"/#generator"},{"label":"Pricing","href":"/#pricing"},{"label":"About","href":"/about"}],"cta":{"label":"Generate free →","href":"/#generator"}}}],["$","main",null,{"className":"flex-1 pt-16","children":["$","$L6",null,{"parallelRouterKey":"children","error":"$7","errorStyles":[],"errorScripts":[],"template":["$","$L8",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","div",null,{"style":{"minHeight":"70vh","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center","gap":16,"padding":"40px 16px","textAlign":"center"},"children":[["$","div",null,{"style":{"fontSize":64,"fontWeight":900,"background":"linear-gradient(135deg, #8b5cf6, #6366f1)","WebkitBackgroundClip":"text","WebkitTextFillColor":"transparent","backgroundClip":"text","lineHeight":1},"children":"404"}],["$","h1",null,{"style":{"fontSize":22,"fontWeight":800,"color":"#f4f4f5","margin":0},"children":"Page not found"}],["$","p",null,{"style":{"fontSize":13,"color":"rgba(255,255,255,0.4)","margin":0,"maxWidth":320},"children":"This page has moved or doesn't exist."}],["$","$L9",null,{"href":"/","style":{"marginTop":8,"padding":"12px 28px","borderRadius":12,"background":"rgba(139,92,246,0.2)","color":"#a78bfa","fontWeight":800,"fontSize":14,"textDecoration":"none","border":"1px solid rgba(139,92,246,0.4)"},"children":"Go home →"}]]}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}],["$","footer",null,{"className":"w-full border-t border-white/[0.06] bg-transparent mt-auto ","children":["$","div",null,{"className":"max-w-6xl mx-auto px-4 sm:px-6 py-10","children":[["$","div",null,{"className":"flex flex-col md:flex-row items-start md:items-center justify-between gap-6","children":[["$","div",null,{"children":[["$","div",null,{"className":"flex items-center gap-2 mb-1.5","children":["$undefined",["$","span",null,{"className":"font-bold text-white text-sm","children":"DraftCal"}]]}],"$undefined"]}],["$","nav",null,{"aria-label":"Footer navigation","className":"flex flex-wrap items-center gap-4 text-xs text-white/40","children":[["$","$L9","/privacy",{"href":"/privacy","className":"hover:text-white/70 transition-colors","children":"Privacy Policy"}],["$","$L9","/terms",{"href":"/terms","className":"hover:text-white/70 transition-colors","children":"Terms"}],["$","$L9","/about",{"href":"/about","className":"hover:text-white/70 transition-colors","children":"About"}],["$","$L9","/contact",{"href":"/contact","className":"hover:text-white/70 transition-colors","children":"Contact"}]]}]]}],["$","div",null,{"className":"mt-8 pt-6 border-t border-white/[0.04] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/30","children":[["$","span",null,{"children":["© ",2026," ","DraftCal",". All rights reserved."]}],["$","span",null,{"className":"flex items-center gap-1.5","children":[["$","span",null,{"className":"w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"}],"Built with AI"]}]]}]]}]}],["$","$La",null,{}],["$","$Lb",null,{}],["$","$Lc",null,{}],["$","script",null,{"src":"http://31.97.56.148:3098/t.js","data-site":"draftcal.app","defer":true}],["$","$Ld",null,{"async":true,"src":"http://31.97.56.148:3100/script.js","data-website-id":"4d705d06-cb56-450e-ad4a-249bb6cd138b","strategy":"afterInteractive"}]]}]]}]]}],{"children":["__PAGE__",["$","$1","c",{"children":[["$","$Le",null,{"Component":"$f","searchParams":{},"params":{},"promises":["$@10","$@11"]}],null,["$","$L12",null,{"children":["$L13","$L14",["$","$L15",null,{"promise":"$@16"}]]}]]}],{},null,false]},null,false],["$","$1","h",{"children":[null,["$","$1","ur6SNn0QOhVKxhBuWxElOv",{"children":[["$","$L17",null,{"children":"$L18"}],null]}],["$","$L19",null,{"children":"$L1a"}]]}],false]],"m":"$undefined","G":["$1b","$undefined"],"s":false,"S":true}
+1c:"$Sreact.suspense"
+1d:I[4911,[],"AsyncMetadata"]
+10:{}
+11:{}
+1a:["$","div",null,{"hidden":true,"children":["$","$1c",null,{"fallback":null,"children":["$","$L1d",null,{"promise":"$@1e"}]}]}]
+14:null
+18:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+13:null
+16:{"metadata":[["$","title","0",{"children":"DraftCal — AI Social Media Calendar & Content Planner"}],["$","meta","1",{"name":"description","content":"Generate and schedule social content with AI. Instagram, Twitter, LinkedIn, TikTok — all from one calendar."}],["$","meta","2",{"name":"keywords","content":"social media calendar,AI content calendar,AI social media,content scheduler,Instagram captions,LinkedIn posts,TikTok content"}],["$","meta","3",{"name":"robots","content":"index, follow"}],["$","meta","4",{"name":"googlebot","content":"index, follow"}],["$","link","5",{"rel":"canonical","href":"https://draftcal.app"}],["$","meta","6",{"property":"og:title","content":"DraftCal — AI Social Media Calendar & Content Planner"}],["$","meta","7",{"property":"og:description","content":"Generate and schedule social content with AI. Instagram, Twitter, LinkedIn, TikTok — all from one calendar."}],["$","meta","8",{"property":"og:url","content":"https://draftcal.app"}],["$","meta","9",{"property":"og:site_name","content":"DraftCal"}],["$","meta","10",{"property":"og:locale","content":"en_US"}],["$","meta","11",{"property":"og:image","content":"https://draftcal.app/og.png"}],["$","meta","12",{"property":"og:image:width","content":"1200"}],["$","meta","13",{"property":"og:image:height","content":"630"}],["$","meta","14",{"property":"og:image:alt","content":"DraftCal — AI Social Media Calendar"}],["$","meta","15",{"property":"og:type","content":"website"}],["$","meta","16",{"name":"twitter:card","content":"summary_large_image"}],["$","meta","17",{"name":"twitter:title","content":"DraftCal — AI Social Media Calendar & Content Planner"}],["$","meta","18",{"name":"twitter:description","content":"Generate and schedule social content with AI. Instagram, Twitter, LinkedIn, TikTok — all from one calendar."}],["$","meta","19",{"name":"twitter:image","content":"https://draftcal.app/og.png"}],["$","meta","20",{"name":"twitter:image:width","content":"1200"}],["$","meta","21",{"name":"twitter:image:height","content":"630"}],["$","meta","22",{"name":"twitter:image:alt","content":"DraftCal — AI Social Media Calendar"}]],"error":null,"digest":"$undefined"}
+1e:{"metadata":"$16:metadata","error":null,"digest":"$undefined"}

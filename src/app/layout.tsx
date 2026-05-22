@@ -30,6 +30,7 @@ export const metadata: Metadata = {
   title: siteConfig.seo.title,
   description: siteConfig.seo.description,
   keywords: ['social media calendar', 'AI content calendar', 'AI social media', 'content scheduler', 'Instagram captions', 'LinkedIn posts', 'TikTok content'],
+  metadataBase: new URL(siteConfig.url),
   openGraph: {
     title: siteConfig.seo.title,
     description: siteConfig.seo.description,

@@ -71,11 +71,11 @@ const SAMPLE_POSTS: PostIdea[] = [
     platform: "Instagram",
     date: "May 12",
     time: "9:00 AM",
-    hook: "This one habit changed everything for my content game 🔥",
-    content: "I used to spend 3 hours planning content. Now it takes 30 seconds. Here's the AI system I built that handles my entire month of posts — and it actually sounds like me.",
-    hashtags: ["contentcreator", "socialmediatips", "AItools", "creatoreconomy"],
+    hook: "POV: You just generated 30 days of content in 28 seconds 🚀",
+    content: "I dropped my brand into DraftCal, picked my vibe (bold + educational), and watched AI write 30 posts across Instagram, TikTok, and LinkedIn. Each one had a different hook style, optimal hashtags, and engagement tips. My content strategy used to take a Sunday. Now it takes less time than brewing coffee.",
+    hashtags: ["contentcreator", "AItools", "socialmedia", "creatoreconomy", "productivity"],
     type: "story",
-    engagement_tip: "Post between 8–10am for 2x more morning saves.",
+    engagement_tip: "Use carousel format — saves get 3× higher reach than static posts.",
   },
   {
     platform: "Twitter/X",
@@ -255,7 +255,7 @@ function PostCard({ post, index, showAnalytics, onSchedule }: { post: PostIdea; 
         <div className="ml-auto flex gap-1.5 flex-wrap">
           <button onClick={onSchedule}
             className="text-xs px-2 py-1 rounded-lg border border-white/10 bg-white/[0.04] text-white/30 hover:text-white/60 hover:border-white/20 transition-all">
-            📅 Schedule
+            📅 Schedule (Pro)
           </button>
           {/* WhatsApp share — huge for content creators */}
           <a href={`https://wa.me/?text=${encodeURIComponent(fullText)}`} target="_blank" rel="noopener noreferrer"
@@ -313,7 +313,7 @@ const PLATFORM_PILLS = [
 const FLOAT_ICONS = ['📸', '𝕏', '▶', 'in', '♪', '◉', '📣', '🎬', '📅', '✦'];
 
 export default function Home() {
-  const { count: gateCount, showGate, increment: gateIncrement, onRegistered, dismissGate, isRegistered } = useGate('socialscribe', 3)
+  const { count: gateCount, showGate, increment: gateIncrement, onRegistered, dismissGate, isRegistered } = useGate('socialscribe', 2)
   const remaining = Math.max(0, 3 - gateCount)
   const isLimited = !isRegistered && gateCount >= 3
 

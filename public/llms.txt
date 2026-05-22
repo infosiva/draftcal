@@ -1,0 +1,22 @@
+# DraftCal
+> AI social media content calendar for creators and brands. Plan a month of content across all platforms in minutes.
+
+## What this site does
+DraftCal uses AI to generate a full month of social media content — posts, captions, hashtags, and publishing schedule — for Instagram, LinkedIn, Twitter/X, TikTok, and Facebook. Enter your brand, niche, and tone, and the AI creates a ready-to-use content plan that you can edit and schedule.
+
+## Who it's for
+Content creators, social media managers, small business owners, marketing teams, and anyone who needs consistent social media presence without spending hours writing posts.
+
+## Key features
+- AI generates 30 days of content in minutes
+- Covers Instagram, LinkedIn, Twitter/X, TikTok, Facebook
+- Platform-optimised captions with hashtags
+- Content calendar view — drag and reschedule
+- Brand voice settings — consistent tone every post
+- Export to CSV or connect to scheduling tools
+
+## Pricing
+Free tier available — generate up to 7 days of content. Pro plan from $9.99/month for unlimited monthly content.
+
+## Contact
+https://draftcal.app
