@@ -2,85 +2,76 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useGate } from '@/lib/shared/useGate'
 import RegisterGate from '@/lib/shared/RegisterGate'
-import { ShimmerButton } from '@/components/magicui/shimmer-button'
-import { NumberTicker } from '@/components/magicui/number-ticker'
-import DraftCalAffiliates from '@/components/DraftCalAffiliates'
-import GuidedTour, { type TourStep } from '@/components/GuidedTour'
 import { siteConfig } from '@/site.config'
 
-const DRAFTCAL_TOUR: TourStep[] = [
-  { target: '#hero-generate-btn', title: 'Generate your calendar free', icon: '📅', body: 'Pick a topic and platforms — AI writes 30 days of posts in one click. No account needed.', placement: 'bottom' },
-  { target: '#generator', title: 'Customise everything', icon: '✏️', body: 'Choose platforms, tone, and content type. Edit any post before publishing.', placement: 'top' },
-  { target: '#pricing', title: 'Go unlimited', icon: '🚀', body: 'Pro removes daily limits — generate as many calendars as you need.', placement: 'top' },
-]
-
+// ── Platform config ──────────────────────────────────────────────────────────
 const PLATFORMS = ["Twitter/X", "LinkedIn", "Instagram", "Facebook", "TikTok"];
 const TONES = ["Professional", "Casual", "Humorous", "Inspirational", "Educational"];
+
+const PLATFORM_META: Record<string, { color: string; bg: string; border: string; icon: string; short: string }> = {
+  "Twitter/X":  { color: "#38bdf8", bg: "rgba(56,189,248,0.12)",  border: "rgba(56,189,248,0.3)",  icon: "𝕏",  short: "X" },
+  "LinkedIn":   { color: "#60a5fa", bg: "rgba(96,165,250,0.12)",  border: "rgba(96,165,250,0.3)",  icon: "in", short: "LI" },
+  "Instagram":  { color: "#f472b6", bg: "rgba(244,114,182,0.12)", border: "rgba(244,114,182,0.3)", icon: "◉",  short: "IG" },
+  "Facebook":   { color: "#818cf8", bg: "rgba(129,140,248,0.12)", border: "rgba(129,140,248,0.3)", icon: "f",  short: "FB" },
+  "TikTok":     { color: "#a78bfa", bg: "rgba(167,139,250,0.12)", border: "rgba(167,139,250,0.3)", icon: "♪",  short: "TT" },
+};
+
 const TYPE_LABELS: Record<string, string> = {
-  tip: "💡 Tip", story: "📖 Story", question: "❓ Question",
-  promo: "📣 Promo", bts: "🎬 Behind scenes", poll: "📊 Poll", carousel: "🖼️ Carousel",
-};
-const PLATFORM_COLORS: Record<string, string> = {
-  "Twitter/X": "text-sky-300 border-sky-500/30 bg-sky-500/10",
-  "LinkedIn": "text-blue-300 border-blue-500/30 bg-blue-500/10",
-  "Instagram": "text-pink-300 border-pink-500/30 bg-pink-500/10",
-  "Facebook": "text-indigo-300 border-indigo-500/30 bg-indigo-500/10",
-  "TikTok": "text-fuchsia-300 border-fuchsia-500/30 bg-fuchsia-500/10",
+  tip: "Tip", story: "Story", question: "Question",
+  promo: "Promo", bts: "Behind scenes", poll: "Poll", carousel: "Carousel",
 };
 
-const PLATFORM_BENCHMARKS: Record<string, { reach: [number, number]; engRate: [number, number]; icon: string }> = {
-  "Twitter/X":  { reach: [200, 800],   engRate: [0.5, 2.5],  icon: "𝕏" },
-  "LinkedIn":   { reach: [300, 1200],  engRate: [2.0, 5.0],  icon: "in" },
-  "Instagram":  { reach: [400, 1800],  engRate: [1.5, 4.0],  icon: "◉" },
-  "Facebook":   { reach: [150, 600],   engRate: [0.5, 2.0],  icon: "f" },
-  "TikTok":     { reach: [500, 5000],  engRate: [3.0, 8.0],  icon: "♪" },
-}
+const CHAR_LIMITS: Record<string, number> = {
+  'Twitter/X': 280, 'LinkedIn': 3000, 'Instagram': 2200, 'Facebook': 63206, 'TikTok': 2200,
+};
 
-function seededRand(seed: number) {
-  const x = Math.sin(seed + 1) * 10000
-  return x - Math.floor(x)
-}
-
-function getAnalytics(platform: string, postIndex: number) {
-  const b = PLATFORM_BENCHMARKS[platform]
-  if (!b) return null
-  const r = seededRand(postIndex * 7)
-  const r2 = seededRand(postIndex * 13)
-  const reach = Math.round(b.reach[0] + r * (b.reach[1] - b.reach[0]))
-  const engRate = +(b.engRate[0] + r2 * (b.engRate[1] - b.engRate[0])).toFixed(1)
-  const engagements = Math.round(reach * engRate / 100)
-  return { reach, engRate, engagements }
-}
-
+// ── Types ────────────────────────────────────────────────────────────────────
 interface PlatformTips { best_times: string[]; max_hashtags: number; format_tip: string }
 interface PostIdea {
-  platform: string;
-  date: string;
-  time: string;
-  content: string;
-  hashtags: string[];
-  type: string;
-  hook?: string;
-  engagement_tip?: string;
-  platform_tips?: PlatformTips;
+  platform: string; date: string; time: string; content: string;
+  hashtags: string[]; type: string; hook?: string;
+  engagement_tip?: string; platform_tips?: PlatformTips;
 }
 
-// ── Sample post cards shown in hero ──
+// ── Hero calendar data ───────────────────────────────────────────────────────
+const HERO_CALENDAR_POSTS: Array<{ day: number; platform: keyof typeof PLATFORM_META; snippet: string; type: string }> = [
+  { day: 1,  platform: "Instagram",  snippet: "POV: Your Sunday now includes a month of content 🗓️",            type: "story" },
+  { day: 2,  platform: "LinkedIn",   snippet: "3 things I stopped doing that doubled my engagement rate",         type: "tip" },
+  { day: 3,  platform: "Twitter/X",  snippet: "Hot take: consistency > virality. Every. Single. Time.",           type: "tip" },
+  { day: 4,  platform: "TikTok",     snippet: "The content secret nobody talks about (hint: batch everything)",   type: "bts" },
+  { day: 5,  platform: "Instagram",  snippet: "Save this if you've ever stared at a blank screen for 20 mins 👆", type: "carousel" },
+  { day: 8,  platform: "LinkedIn",   snippet: "I generated 30 days of content in under a minute. Here's how.",    type: "promo" },
+  { day: 9,  platform: "Twitter/X",  snippet: "Creators who post daily earn 7× more than those who don't. Data.",  type: "tip" },
+  { day: 10, platform: "TikTok",     snippet: "Day 10 of posting every day — what changed 🎬",                   type: "story" },
+  { day: 11, platform: "Instagram",  snippet: "This is the only content calendar you'll ever need",               type: "promo" },
+  { day: 12, platform: "LinkedIn",   snippet: "The best time to post on LinkedIn in 2025 (tested, not guessed)",  type: "tip" },
+  { day: 15, platform: "Twitter/X",  snippet: "I asked AI to write my captions for a month. Here's the result",   type: "story" },
+  { day: 16, platform: "Instagram",  snippet: "5 hooks that stopped the scroll for my last 5 posts 🪝",           type: "carousel" },
+  { day: 17, platform: "TikTok",     snippet: "Why I quit manually writing captions (and what I do instead)",     type: "bts" },
+  { day: 22, platform: "LinkedIn",   snippet: "The content calendar system that keeps me consistent effortlessly", type: "tip" },
+  { day: 23, platform: "Twitter/X",  snippet: "Your content is good. Your consistency isn't. Fix that first.",     type: "tip" },
+  { day: 28, platform: "Instagram",  snippet: "Month wrap-up: 28 posts, 0 stress, 1 AI tool. Recap 👇",           type: "story" },
+];
+
+const CAL_DAYS = Array.from({ length: 28 }, (_, i) => i + 1);
+const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const HERO_POST_MAP = new Map(HERO_CALENDAR_POSTS.map(p => [p.day, p]));
+
+// Mobile week posts (day 8-14)
+const MOBILE_WEEK_POSTS = HERO_CALENDAR_POSTS.filter(p => p.day >= 8 && p.day <= 14);
+
+// ── Sample generated posts for right-column preview ──────────────────────────
 const SAMPLE_POSTS: PostIdea[] = [
   {
-    platform: "Instagram",
-    date: "May 12",
-    time: "9:00 AM",
+    platform: "Instagram", date: "May 12", time: "9:00 AM",
     hook: "POV: You just generated 30 days of content in 28 seconds 🚀",
-    content: "I dropped my brand into DraftCal, picked my vibe (bold + educational), and watched AI write 30 posts across Instagram, TikTok, and LinkedIn. Each one had a different hook style, optimal hashtags, and engagement tips. My content strategy used to take a Sunday. Now it takes less time than brewing coffee.",
-    hashtags: ["contentcreator", "AItools", "socialmedia", "creatoreconomy", "productivity"],
+    content: "I dropped my brand into DraftCal, picked my vibe, and watched AI write 30 posts across Instagram, TikTok, and LinkedIn. Each one had a different hook style, optimal hashtags, and engagement tips. My content strategy used to take a Sunday. Now it takes less time than brewing coffee.",
+    hashtags: ["contentcreator", "AItools", "socialmedia", "creatoreconomy"],
     type: "story",
     engagement_tip: "Use carousel format — saves get 3× higher reach than static posts.",
   },
   {
-    platform: "Twitter/X",
-    date: "May 13",
-    time: "11:00 AM",
+    platform: "Twitter/X", date: "May 13", time: "11:00 AM",
     hook: "Hot take: consistency beats virality every time.",
     content: "90% of creators quit before they see results. The ones who win show up every single day — even when nobody's watching. Schedule your content. Build the habit. Win the long game.",
     hashtags: ["buildinpublic", "creatoreconomy", "growthhacks"],
@@ -88,17 +79,16 @@ const SAMPLE_POSTS: PostIdea[] = [
     engagement_tip: "Reply to your first 5 comments within 1 hour for major reach boost.",
   },
   {
-    platform: "LinkedIn",
-    date: "May 14",
-    time: "8:00 AM",
+    platform: "LinkedIn", date: "May 14", time: "8:00 AM",
     hook: "I generated a month of LinkedIn content in under a minute. Here's what happened.",
-    content: "Dropped it into DraftCal. Selected my tone (Professional), my niche (SaaS marketing), and hit generate. 30 platform-optimized posts — hooks, hashtags, engagement tips. The future of content creation is here.",
+    content: "Dropped it into DraftCal. Selected my tone, my niche, and hit generate. 30 platform-optimized posts — hooks, hashtags, engagement tips included. The future of content creation is here.",
     hashtags: ["marketing", "contentmarketing", "LinkedInTips", "productivityhacks"],
     type: "promo",
     engagement_tip: "Add a poll at the end to double your comment rate.",
   },
 ];
 
+// ── Copy button ───────────────────────────────────────────────────────────────
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
   const copy = useCallback(async () => {
@@ -108,83 +98,89 @@ function CopyButton({ text }: { text: string }) {
   }, [text]);
   return (
     <button onClick={copy}
-      className={`text-xs px-2 py-1 rounded-lg border transition-all ${copied ? 'border-pink-500/40 bg-pink-500/10 text-pink-300' : 'border-white/10 bg-white/[0.04] text-white/40 hover:text-white hover:border-white/20'}`}>
+      className="btn-press text-xs px-2.5 py-1 rounded-lg border transition-all"
+      style={{
+        borderColor: copied ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.1)',
+        background: copied ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.04)',
+        color: copied ? '#86efac' : 'rgba(255,255,255,0.4)',
+      }}>
       {copied ? '✓ Copied' : 'Copy'}
     </button>
   );
 }
 
+// ── Pro modal ─────────────────────────────────────────────────────────────────
 function ProModal({ onClose, onCheckout, loading }: { onClose: () => void; onCheckout: () => void; loading: boolean }) {
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-6">
-      <div className="rounded-2xl border border-pink-500/20 p-8 max-w-sm w-full text-center shadow-2xl shadow-pink-500/10"
-        style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #0d0a14 100%)' }}>
-        <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg shadow-pink-500/30"
-          style={{ background: 'linear-gradient(135deg, #ec4899, #8b5cf6)' }}>✦</div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-6"
+      style={{ background: 'rgba(0,12,4,0.85)', backdropFilter: 'blur(16px)' }}>
+      <div className="rounded-2xl border p-8 max-w-sm w-full text-center"
+        style={{ background: 'linear-gradient(135deg, #061409 0%, #040d06 100%)', borderColor: 'rgba(34,197,94,0.25)', boxShadow: '0 0 60px rgba(34,197,94,0.12)' }}>
+        <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"
+          style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)', boxShadow: '0 0 30px rgba(34,197,94,0.35)' }}>
+          ✦
+        </div>
         <h3 className="text-xl font-black mb-2">Go Pro — $10/mo</h3>
-        <p className="text-white/50 text-sm mb-5 leading-relaxed">
-          Schedule directly to all 5 platforms, unlock unlimited generations, and dominate your content game.
+        <p className="text-sm mb-5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>
+          Unlimited calendars, schedule directly to all platforms, and never run out of content again.
         </p>
         <div className="space-y-2 mb-6 text-left">
-          {['Unlimited content generations', 'Schedule to all 5 platforms', 'Scheduling links included', 'Full analytics dashboard', 'Team seats'].map(f => (
-            <div key={f} className="flex items-center gap-2 text-sm text-white/70">
-              <span className="text-pink-400">✓</span> {f}
+          {['Unlimited content generations', 'Schedule to all 5 platforms', 'Full analytics dashboard', 'Brand voice memory', 'Team seats'].map(f => (
+            <div key={f} className="flex items-center gap-2 text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
+              <span style={{ color: '#22c55e' }}>✓</span> {f}
             </div>
           ))}
         </div>
         <button onClick={onCheckout} disabled={loading}
-          className="w-full py-3 rounded-xl font-bold text-sm mb-3 transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          style={{ background: 'linear-gradient(135deg, #ec4899, #8b5cf6)' }}>
+          className="btn-press w-full py-3 rounded-xl font-bold text-sm mb-3 transition-all flex items-center justify-center gap-2"
+          style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)', opacity: loading ? 0.6 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}>
           {loading ? (
-            <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Redirecting...</>
+            <><div className="w-4 h-4 border-2 rounded-full animate-spin" style={{ borderColor: 'rgba(255,255,255,0.3)', borderTopColor: 'white' }} />Redirecting...</>
           ) : 'Upgrade to Pro — $10/mo'}
         </button>
-        <button onClick={onClose} className="text-xs text-white/30 hover:text-white/50 transition-colors">
+        <button onClick={onClose} className="text-xs transition-colors" style={{ color: 'rgba(255,255,255,0.3)' }}>
           Maybe later
         </button>
       </div>
     </div>
-  )
+  );
 }
 
-const CHAR_LIMITS: Record<string, number> = {
-  'Twitter/X': 280,
-  'LinkedIn': 3000,
-  'Instagram': 2200,
-  'Facebook': 63206,
-  'TikTok': 2200,
-};
-
+// ── Post card ─────────────────────────────────────────────────────────────────
 function PostCard({ post, index, showAnalytics, onSchedule }: { post: PostIdea; index: number; showAnalytics: boolean; onSchedule: () => void }) {
   const [expanded, setExpanded] = useState(false);
   const fullText = post.content + (post.hashtags?.length ? '\n' + post.hashtags.map(h => `#${h}`).join(' ') : '');
-  const analytics = getAnalytics(post.platform, index);
+  const meta = PLATFORM_META[post.platform];
   const charLimit = CHAR_LIMITS[post.platform];
-  const charCount = post.content.length;
-  const charPct = charLimit ? Math.min(100, Math.round((charCount / charLimit) * 100)) : null;
-  const charOver = charLimit ? charCount > charLimit : false;
+  const charPct = charLimit ? Math.min(100, Math.round((post.content.length / charLimit) * 100)) : null;
+  const charOver = charLimit ? post.content.length > charLimit : false;
 
   return (
-    <div className="reveal-3d rounded-xl border border-white/8 bg-white/[0.025] hover:border-pink-500/30 transition-all group flex flex-col">
+    <div className="card-hover rounded-xl border flex flex-col"
+      style={{ borderColor: 'rgba(34,197,94,0.1)', background: 'rgba(255,255,255,0.025)' }}>
       <div className="p-4 pb-3 flex items-center justify-between">
-        <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${PLATFORM_COLORS[post.platform] || 'text-pink-300 border-pink-500/30 bg-pink-500/10'}`}>
-          {post.platform}
+        <span className="text-[10px] px-2 py-0.5 rounded-full border font-semibold"
+          style={{ color: meta?.color, background: meta?.bg, borderColor: meta?.border }}>
+          {meta?.icon} {post.platform}
         </span>
-        <span className="text-[10px] text-white/30">{post.date} · {post.time}</span>
+        <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>{post.date} · {post.time}</span>
       </div>
 
       {post.hook && (
         <div className="px-4 pb-2">
-          <p className="text-xs font-semibold text-white/90 leading-snug">&ldquo;{post.hook}&rdquo;</p>
+          <p className="text-xs font-semibold leading-snug" style={{ color: 'rgba(255,255,255,0.9)' }}>&ldquo;{post.hook}&rdquo;</p>
         </div>
       )}
 
       <div className="px-4 pb-3 flex-1">
-        <p className={`text-xs text-white/65 leading-relaxed ${!expanded ? 'line-clamp-3' : ''}`}>
+        <p className={`text-xs leading-relaxed ${!expanded ? 'line-clamp-3' : ''}`}
+          style={{ color: 'rgba(255,255,255,0.6)' }}>
           {post.content}
         </p>
         {post.content.length > 160 && (
-          <button onClick={() => setExpanded(e => !e)} className="text-[10px] text-pink-400/70 hover:text-pink-300 mt-1">
+          <button onClick={() => setExpanded(e => !e)}
+            className="text-[10px] mt-1 transition-colors"
+            style={{ color: 'rgba(34,197,94,0.7)' }}>
             {expanded ? 'Show less' : 'Show more'}
           </button>
         )}
@@ -192,76 +188,45 @@ function PostCard({ post, index, showAnalytics, onSchedule }: { post: PostIdea; 
 
       {post.hashtags?.length > 0 && (
         <div className="px-4 pb-3 flex flex-wrap gap-1">
-          {post.hashtags.map((h, i) => (
-            <span key={i} className="text-[10px] px-1.5 py-0.5 rounded-full bg-pink-500/10 border border-pink-500/20 text-pink-400/80">
+          {post.hashtags.slice(0, 4).map((h, i) => (
+            <span key={i} className="text-[10px] px-1.5 py-0.5 rounded-full"
+              style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', color: 'rgba(134,239,172,0.8)' }}>
               #{h}
             </span>
           ))}
         </div>
       )}
 
-      {showAnalytics && analytics && (
-        <div className="mx-4 mb-3 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/8">
-          <div className="text-[10px] text-white/30 mb-1.5">Estimated reach</div>
-          <div className="flex items-center gap-4">
-            <div className="text-center">
-              <div className="text-sm font-bold text-white/80">{analytics.reach.toLocaleString()}</div>
-              <div className="text-[9px] text-white/30">impressions</div>
-            </div>
-            <div className="text-center">
-              <div className="text-sm font-bold text-pink-400">{analytics.engRate}%</div>
-              <div className="text-[9px] text-white/30">eng. rate</div>
-            </div>
-            <div className="text-center">
-              <div className="text-sm font-bold text-purple-400">{analytics.engagements}</div>
-              <div className="text-[9px] text-white/30">interactions</div>
-            </div>
-            <div className="ml-auto">
-              <div className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${
-                analytics.engRate >= 4 ? 'border-pink-500/30 bg-pink-500/10 text-pink-300' :
-                analytics.engRate >= 2 ? 'border-purple-500/30 bg-purple-500/10 text-purple-300' :
-                'border-white/10 text-white/30'
-              }`}>
-                {analytics.engRate >= 4 ? 'High' : analytics.engRate >= 2 ? 'Medium' : 'Low'}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {post.engagement_tip && (
-        <div className="mx-4 mb-3 px-3 py-2 rounded-lg border" style={{ background: 'rgba(139,92,246,0.08)', borderColor: 'rgba(139,92,246,0.2)' }}>
-          <p className="text-[10px] text-purple-300/80 leading-snug">
-            <span className="font-semibold">⚡ Tip:</span> {post.engagement_tip}
+        <div className="mx-4 mb-3 px-3 py-2 rounded-lg"
+          style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.15)' }}>
+          <p className="text-[10px] leading-snug" style={{ color: 'rgba(134,239,172,0.8)' }}>
+            <span className="font-semibold">Tip: </span>{post.engagement_tip}
           </p>
         </div>
       )}
 
-      {charLimit && (
+      {charLimit && charPct !== null && (
         <div className="px-4 pb-2 flex items-center gap-2">
-          <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all ${charOver ? 'bg-red-500' : charPct! > 80 ? 'bg-amber-400' : 'bg-pink-500/60'}`}
-              style={{ width: `${charPct}%` }}
-            />
+          <div className="flex-1 h-0.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
+            <div className="h-full rounded-full transition-all"
+              style={{ width: `${charPct}%`, background: charOver ? '#ef4444' : charPct > 80 ? '#fbbf24' : 'rgba(34,197,94,0.6)' }} />
           </div>
-          <span className={`text-[10px] font-mono tabular-nums ${charOver ? 'text-red-400' : 'text-white/25'}`}>
-            {charCount}{charLimit ? `/${charLimit}` : ''}
+          <span className="text-[10px] font-mono" style={{ color: charOver ? '#f87171' : 'rgba(255,255,255,0.2)' }}>
+            {post.content.length}/{charLimit}
           </span>
         </div>
       )}
-      <div className="px-4 pb-4 pt-1 border-t border-white/5 flex items-center gap-2 flex-wrap">
-        <span className="text-[10px] text-white/25">{TYPE_LABELS[post.type] || post.type}</span>
-        <div className="ml-auto flex gap-1.5 flex-wrap">
+
+      <div className="px-4 pb-4 pt-1 border-t flex items-center gap-2 flex-wrap"
+        style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
+        <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.25)' }}>{TYPE_LABELS[post.type] || post.type}</span>
+        <div className="ml-auto flex gap-1.5">
           <button onClick={onSchedule}
-            className="text-xs px-2 py-1 rounded-lg border border-white/10 bg-white/[0.04] text-white/30 hover:text-white/60 hover:border-white/20 transition-all">
-            📅 Schedule (Pro)
+            className="btn-press text-xs px-2.5 py-1 rounded-lg border transition-all"
+            style={{ borderColor: 'rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.35)' }}>
+            Schedule (Pro)
           </button>
-          {/* WhatsApp share — huge for content creators */}
-          <a href={`https://wa.me/?text=${encodeURIComponent(fullText)}`} target="_blank" rel="noopener noreferrer"
-            className="text-xs px-2 py-1 rounded-lg border border-white/10 bg-white/[0.04] text-white/30 hover:text-white/60 hover:border-white/20 transition-all">
-            💬
-          </a>
           <CopyButton text={fullText} />
         </div>
       </div>
@@ -269,117 +234,99 @@ function PostCard({ post, index, showAnalytics, onSchedule }: { post: PostIdea; 
   );
 }
 
-function PlatformInsight({ platform, tips }: { platform: string; tips: PlatformTips }) {
+// ── Hero calendar grid cell ───────────────────────────────────────────────────
+function CalCell({ day, post }: { day: number; post?: typeof HERO_CALENDAR_POSTS[0] }) {
+  const meta = post ? PLATFORM_META[post.platform] : null;
+  const isToday = day === 12;
+
   return (
-    <div className={`rounded-xl border p-3 ${PLATFORM_COLORS[platform]?.replace('text-', 'border-') || 'border-white/10'} bg-white/[0.02]`}>
-      <div className={`text-xs font-semibold mb-2 ${PLATFORM_COLORS[platform]?.split(' ')[0]}`}>{platform}</div>
-      <div className="space-y-1.5">
-        <div>
-          <div className="text-[10px] text-white/40 mb-1">Best times to post</div>
-          <div className="flex gap-1 flex-wrap">
-            {tips.best_times.map(t => (
-              <span key={t} className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] text-white/60">{t}</span>
-            ))}
-          </div>
-        </div>
-        <p className="text-[10px] text-white/45 leading-relaxed">{tips.format_tip}</p>
-      </div>
+    <div className="rounded-lg p-1.5 flex flex-col gap-1 min-h-[56px] transition-all"
+      style={{
+        background: isToday ? 'rgba(34,197,94,0.12)' : post ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.015)',
+        border: `1px solid ${isToday ? 'rgba(34,197,94,0.4)' : post ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.04)'}`,
+      }}>
+      <span className="text-[10px] font-semibold leading-none"
+        style={{ color: isToday ? '#86efac' : post ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.25)' }}>
+        {day}
+      </span>
+      {post && meta && (
+        <>
+          <span className="text-[9px] leading-tight line-clamp-2"
+            style={{ color: 'rgba(255,255,255,0.5)' }}>
+            {post.snippet.length > 40 ? post.snippet.slice(0, 40) + '…' : post.snippet}
+          </span>
+          <span className="text-[8px] px-1 py-0.5 rounded-full self-start font-semibold"
+            style={{ color: meta.color, background: meta.bg, border: `1px solid ${meta.border}` }}>
+            {meta.short}
+          </span>
+        </>
+      )}
     </div>
   );
 }
 
-// Calendar mockup
-const CAL_DAYS = Array.from({ length: 28 }, (_, i) => i + 1);
-const CAL_DOTS: Record<number, string[]> = {
-  1: ['#8b5cf6'], 3: ['#ec4899', '#8b5cf6'], 5: ['#3b82f6'],
-  7: ['#ec4899'], 8: ['#8b5cf6', '#3b82f6'], 10: ['#ec4899'],
-  12: ['#8b5cf6'], 14: ['#ec4899', '#3b82f6'], 15: ['#8b5cf6'],
-  17: ['#3b82f6', '#ec4899'], 19: ['#8b5cf6'], 21: ['#ec4899'],
-  22: ['#8b5cf6', '#3b82f6', '#ec4899'], 24: ['#8b5cf6'],
-  26: ['#ec4899'], 28: ['#3b82f6', '#8b5cf6'],
-};
-const THIS_WEEK = new Set([8, 9, 10, 11, 12, 13, 14]);
-const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-const PLATFORM_PILLS = [
-  { label: 'Instagram', icon: '📸', color: 'text-pink-300 border-pink-500/30 bg-pink-500/10' },
-  { label: 'TikTok', icon: '♪', color: 'text-fuchsia-300 border-fuchsia-500/30 bg-fuchsia-500/10' },
-  { label: 'Twitter/X', icon: '𝕏', color: 'text-sky-300 border-sky-500/30 bg-sky-500/10' },
-  { label: 'LinkedIn', icon: 'in', color: 'text-blue-300 border-blue-500/30 bg-blue-500/10' },
-  { label: 'Facebook', icon: 'f', color: 'text-indigo-300 border-indigo-500/30 bg-indigo-500/10' },
-];
-
-// Floating social icon silhouettes for hero bg
-const FLOAT_ICONS = ['📸', '𝕏', '▶', 'in', '♪', '◉', '📣', '🎬', '📅', '✦'];
-
+// ── Main page ─────────────────────────────────────────────────────────────────
 export default function Home() {
-  const { count: gateCount, showGate, increment: gateIncrement, onRegistered, dismissGate, isRegistered } = useGate('socialscribe', 2)
-  const remaining = Math.max(0, 3 - gateCount)
-  const isLimited = !isRegistered && gateCount >= 3
+  const { count: gateCount, showGate, increment: gateIncrement, onRegistered, dismissGate, isRegistered } = useGate('socialscribe', 2);
+  const remaining = Math.max(0, 3 - gateCount);
+  const isLimited = !isRegistered && gateCount >= 3;
 
   const [topic, setTopic] = useState("");
-  const [platforms, setPlatforms] = useState<string[]>(["Twitter/X", "LinkedIn"]);
-  const [tone, setTone] = useState("Professional");
+  const [heroNiche, setHeroNiche] = useState("");
+  const [platforms, setPlatforms] = useState<string[]>(["Twitter/X", "LinkedIn", "Instagram"]);
+  const [tone, setTone] = useState("Casual");
   const [weeks, setWeeks] = useState(2);
   const [posts, setPosts] = useState<PostIdea[]>([]);
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [filterPlatform, setFilterPlatform] = useState("All");
   const [filterType, setFilterType] = useState("All");
-  const [showInsights, setShowInsights] = useState(false);
-  const [showAnalytics, setShowAnalytics] = useState(false);
   const [showProModal, setShowProModal] = useState(false);
-  const resultsRef = useRef<HTMLDivElement>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [isPro, setIsPro] = useState(false);
+  const resultsRef = useRef<HTMLDivElement>(null);
+  const generatorRef = useRef<HTMLElement>(null);
 
-  // Check upgraded param + localStorage on mount; fire user stats
   useEffect(() => {
-    const stored = localStorage.getItem('draftcal-pro')
-    if (stored === '1') setIsPro(true)
-    const params = new URLSearchParams(window.location.search)
+    if (localStorage.getItem('draftcal-pro') === '1') setIsPro(true);
+    const params = new URLSearchParams(window.location.search);
     if (params.get('upgraded') === '1') {
-      setIsPro(true)
-      localStorage.setItem('draftcal-pro', '1')
-      window.history.replaceState({}, '', '/')
+      setIsPro(true);
+      localStorage.setItem('draftcal-pro', '1');
+      window.history.replaceState({}, '', '/');
     }
-    // User stats — fire and forget
+    // Fire-and-forget stats ping
     fetch('http://31.97.56.148:3099/api/stats', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        site: 'draftcal.app',
-        path: window.location.pathname,
-        userAgent: navigator.userAgent,
-        timestamp: new Date().toISOString(),
-      }),
-    }).catch(() => {/* ignore — fire and forget */})
-  }, [])
+      body: JSON.stringify({ site: 'draftcal.app', path: window.location.pathname, userAgent: navigator.userAgent, timestamp: new Date().toISOString() }),
+    }).catch(() => {});
+  }, []);
 
   const handleUpgrade = useCallback(async () => {
-    setCheckoutLoading(true)
+    setCheckoutLoading(true);
     try {
-      const res = await fetch('/api/stripe/checkout', { method: 'POST' })
-      const data = await res.json()
-      if (data.url) window.location.href = data.url
-    } catch {
-      setCheckoutLoading(false)
-    }
-  }, [])
+      const res = await fetch('/api/stripe/checkout', { method: 'POST' });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch { setCheckoutLoading(false); }
+  }, []);
 
   const togglePlatform = (p: string) =>
-    setPlatforms((prev) => prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p]);
+    setPlatforms(prev => prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p]);
 
-  async function generate() {
-    const allowed = await gateIncrement()
-    if (!allowed) return
+  async function generate(overrideTopic?: string) {
+    const t = overrideTopic ?? topic;
+    if (!t) return;
+    const allowed = await gateIncrement();
+    if (!allowed) return;
     setLoading(true);
     setApiError(null);
     try {
       const res = await fetch("/api/generate-calendar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic, platforms, tone, weeks }),
+        body: JSON.stringify({ topic: t, platforms, tone, weeks }),
       });
       const data = await res.json();
       if (!res.ok || data.error) {
@@ -397,26 +344,35 @@ export default function Home() {
     }
   }
 
+  function handleHeroGenerate() {
+    if (!heroNiche) return;
+    setTopic(heroNiche);
+    generatorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    generate(heroNiche);
+  }
+
   function copyAll() {
     const text = posts.map(p =>
-      `[${p.platform}] ${p.date} ${p.time}\n${p.content}\n${p.hashtags?.map(h => '#'+h).join(' ') || ''}`
+      `[${p.platform}] ${p.date} ${p.time}\n${p.content}\n${p.hashtags?.map(h => '#' + h).join(' ') || ''}`
     ).join('\n\n---\n\n');
     navigator.clipboard.writeText(text);
   }
 
   function downloadCSV() {
-    const header = 'Platform,Date,Time,Type,Hook,Content,Hashtags\n'
+    const header = 'Platform,Date,Time,Type,Hook,Content,Hashtags\n';
     const rows = posts.map(p => [
       p.platform, p.date, p.time, p.type,
       `"${(p.hook || '').replace(/"/g, '""')}"`,
       `"${p.content.replace(/"/g, '""')}"`,
-      `"${(p.hashtags || []).map(h => '#'+h).join(' ')}"`
-    ].join(',')).join('\n')
-    const blob = new Blob([header + rows], { type: 'text/csv' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a'); a.href = url
-    a.download = `social-calendar-${new Date().toISOString().slice(0,10)}.csv`
-    a.click(); URL.revokeObjectURL(url)
+      `"${(p.hashtags || []).map(h => '#' + h).join(' ')}"`
+    ].join(',')).join('\n');
+    const blob = new Blob([header + rows], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `social-calendar-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   const filteredPosts = posts.filter(p => {
@@ -425,686 +381,609 @@ export default function Home() {
     return true;
   });
 
-  const platformsWithTips = posts.length > 0
-    ? [...new Set(posts.map(p => p.platform))].filter(pl => posts.find(p => p.platform === pl)?.platform_tips)
-    : [];
-
   const types = posts.length > 0 ? [...new Set(posts.map(p => p.type))] : [];
-
-  const totalReach = posts.reduce((sum, p, i) => {
-    const a = getAnalytics(p.platform, i)
-    return sum + (a?.reach || 0)
-  }, 0)
 
   return (
     <>
-    {showGate && (
-      <RegisterGate
-        freeUsed={gateCount}
-        freeLimit={3}
-        freeFeature="calendars"
-        lockedFeature="unlimited calendar generations"
-        accentColor="#ec4899"
-        site="socialscribe"
-        onSuccess={onRegistered}
-        onDismiss={dismissGate}
-      />
-    )}
-    {showProModal && (
-      <ProModal
-        onClose={() => setShowProModal(false)}
-        onCheckout={handleUpgrade}
-        loading={checkoutLoading}
-      />
-    )}
+      {showGate && (
+        <RegisterGate
+          freeUsed={gateCount}
+          freeLimit={3}
+          freeFeature="calendars"
+          lockedFeature="unlimited calendar generations"
+          accentColor="#22c55e"
+          site="socialscribe"
+          onSuccess={onRegistered}
+          onDismiss={dismissGate}
+        />
+      )}
+      {showProModal && (
+        <ProModal onClose={() => setShowProModal(false)} onCheckout={handleUpgrade} loading={checkoutLoading} />
+      )}
 
-    <main className="min-h-screen text-white relative overflow-x-hidden">
-      <div className="noise-overlay" aria-hidden="true" />
+      {/* Pro badge in fixed position when pro */}
+      {isPro && (
+        <div className="fixed top-20 right-4 z-40 text-[10px] px-3 py-1 rounded-full font-bold"
+          style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)', color: 'white' }}>
+          PRO ✦
+        </div>
+      )}
 
-      {/* ── Animated gradient mesh background ── */}
-      <div className="fixed inset-0 pointer-events-none" aria-hidden="true" style={{
-        background: 'radial-gradient(ellipse 80% 60% at 20% 20%, rgba(236,72,153,0.18) 0%, transparent 60%), radial-gradient(ellipse 70% 50% at 80% 30%, rgba(139,92,246,0.18) 0%, transparent 60%), radial-gradient(ellipse 60% 60% at 50% 80%, rgba(59,130,246,0.15) 0%, transparent 60%), #050510',
-        zIndex: 0,
-      }} />
+      <div className="min-h-screen text-white relative overflow-x-hidden"
+        style={{ background: '#040d06' }}>
 
-      {/* Floating social icon silhouettes */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true" style={{ zIndex: 0 }}>
-        {FLOAT_ICONS.map((icon, i) => (
-          <span key={i} className="absolute text-white/[0.04] select-none"
-            style={{
-              fontSize: `${24 + (i % 3) * 16}px`,
-              left: `${(i * 137.5) % 100}%`,
-              top: `${(i * 97.3 + 10) % 90}%`,
-              animation: `float ${8 + i * 1.3}s ease-in-out infinite`,
-              animationDelay: `${-i * 1.1}s`,
-              fontFamily: 'system-ui',
-            }}>
-            {icon}
-          </span>
-        ))}
-      </div>
+        {/* Emerald glow bg blobs */}
+        <div className="fixed inset-0 pointer-events-none" aria-hidden="true" style={{ zIndex: 0 }}>
+          <div className="absolute rounded-full blur-3xl opacity-20"
+            style={{ width: 600, height: 400, top: '-100px', left: '-100px', background: 'radial-gradient(ellipse, #16a34a 0%, transparent 70%)' }} />
+          <div className="absolute rounded-full blur-3xl opacity-10"
+            style={{ width: 500, height: 500, top: '40%', right: '-150px', background: 'radial-gradient(ellipse, #22c55e 0%, transparent 70%)' }} />
+          <div className="absolute rounded-full blur-3xl opacity-8"
+            style={{ width: 400, height: 300, bottom: '20%', left: '30%', background: 'radial-gradient(ellipse, #4ade80 0%, transparent 70%)' }} />
+        </div>
 
-      {/* ── Sticky nav ── */}
-      <nav className="sticky top-0 z-50 backdrop-blur-xl border-b border-white/[0.06]"
-        style={{ background: 'rgba(5,5,16,0.85)' }}>
-        <div className="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-xl font-black tracking-tight"
-              style={{ background: 'linear-gradient(135deg, #ec4899, #8b5cf6, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              DraftCal
+        {/* ── HERO ──────────────────────────────────────────────────────── */}
+        <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-6">
+
+          {/* Badge */}
+          <div className="flex justify-center mb-6 fade-up">
+            <span className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-1.5 rounded-full border"
+              style={{ background: 'rgba(34,197,94,0.08)', borderColor: 'rgba(34,197,94,0.25)', color: '#86efac' }}>
+              <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#22c55e' }} />
+              Free to generate · No account needed
             </span>
-            <span className="pill-glass text-[11px] px-3 py-1 font-semibold">AI Content Calendar</span>
-            {isPro && (
-              <span className="text-[10px] px-2.5 py-1 rounded-full font-bold"
-                style={{ background: 'linear-gradient(135deg, #ec4899, #8b5cf6)', color: 'white' }}>
-                PRO ✦
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-3">
-            {posts.length > 0 && (
-              <>
-                <button onClick={() => setShowAnalytics(s => !s)}
-                  className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
-                    showAnalytics
-                      ? 'border-pink-500/40 bg-pink-500/10 text-pink-300'
-                      : 'border-white/10 bg-white/[0.04] text-white/50 hover:text-white/80'
-                  }`}>
-                  📈 {showAnalytics ? 'Hide analytics' : 'Analytics'}
-                </button>
-                <button onClick={copyAll}
-                  className="px-3 py-1.5 rounded-lg border border-white/15 text-xs text-white/60 hover:text-white hover:border-white/30 transition-all">
-                  Copy All
-                </button>
-                <button onClick={downloadCSV}
-                  className="px-3 py-1.5 rounded-lg border border-white/15 text-xs text-white/60 hover:text-white hover:border-white/30 transition-all flex items-center gap-1">
-                  ⬇️ CSV
-                </button>
-              </>
-            )}
-            {!isPro ? (
-              <button onClick={() => setShowProModal(true)}
-                className="px-4 py-2 rounded-xl text-sm font-bold transition-all hover:opacity-90"
-                style={{ background: 'linear-gradient(135deg, #ec4899, #8b5cf6)' }}>
-                Go Pro — $10/mo
-              </button>
-            ) : (
-              <span className="px-4 py-2 rounded-xl text-sm font-bold"
-                style={{ background: 'linear-gradient(135deg, rgba(236,72,153,0.2), rgba(139,92,246,0.2))', border: '1px solid rgba(236,72,153,0.3)', color: '#f9a8d4' }}>
-                Pro member ✦
-              </span>
-            )}
-          </div>
-        </div>
-      </nav>
-
-      {/* ── Bold hero ── */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pt-10 pb-6">
-        {/* Badge */}
-        <div className="flex justify-center mb-5" style={{ animation: 'fadeSlideUp 0.5s ease-out both' }}>
-          <span className="pill-glass text-xs font-semibold px-4 py-1.5 inline-flex items-center gap-2">
-            <span className="text-pink-400">●</span>
-            Free to generate · No account needed
-          </span>
-        </div>
-
-        <div className="text-center mb-8">
-          <h1 className="font-black leading-[1.02] mb-4 tracking-tight" style={{ fontSize:'clamp(2.2rem, 6vw, 4.5rem)', animation: 'fadeSlideUp 0.6s 0.1s ease-out both' }}>
-            Generate{' '}
-            <span style={{
-              background: 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}>30 days</span>
-            {' '}of<br />
-            social content in{' '}
-            <span style={{
-              background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}>30 seconds</span>
-            {' '}with AI
-          </h1>
-          <p className="text-white/55 text-lg leading-relaxed max-w-xl mx-auto mb-8" style={{ animation: 'fadeSlideUp 0.6s 0.2s ease-out both' }}>
-            Drop your brand. Pick your platforms. Watch AI fill your entire content calendar with scroll-stopping posts — hooks, hashtags, engagement tips included.
-          </p>
-
-          {/* Platform badge row */}
-          <div className="flex flex-wrap gap-2 justify-center mb-8" style={{ animation: 'fadeSlideUp 0.6s 0.3s ease-out both' }}>
-            {PLATFORM_PILLS.map(p => (
-              <span key={p.label} className={`pill-glass text-xs font-medium px-3 py-1.5 flex items-center gap-1.5 ${p.color}`}>
-                <span className="font-bold">{p.icon}</span> {p.label}
-              </span>
-            ))}
           </div>
 
-          {/* CTAs */}
-          <div className="flex flex-wrap gap-4 justify-center" style={{ animation: 'fadeSlideUp 0.6s 0.4s ease-out both' }}>
-            <ShimmerButton
-              id="hero-generate-btn"
-              onClick={() => document.getElementById('generator')?.scrollIntoView({ behavior: 'smooth' })}
-              borderRadius="1rem"
-              background="rgba(99,102,241,1)"
-              shimmerColor="#f9a8d4"
-              shimmerDuration="2.5s"
-              className="px-8 py-4 font-black text-base shadow-[0_0_40px_rgba(99,102,241,0.5),0_8px_30px_rgba(0,0,0,0.4)]">
-              ✦ Generate my calendar free
-            </ShimmerButton>
-            <button
-              onClick={() => setShowProModal(true)}
-              className="px-8 py-4 rounded-2xl font-bold text-base border border-white/15 text-white/70 hover:border-pink-500/40 hover:text-white transition-all">
-              See Pro plan — $10/mo →
-            </button>
-          </div>
-        </div>
-      </section>
+          {/* Split layout: headline left, calendar right (desktop) */}
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
 
-      {/* ── Stats Bar ── */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pb-8" style={{ animation: 'fadeSlideUp 0.6s 0.5s ease-out both' }}>
-        <div className="flex flex-wrap items-center justify-center gap-8 py-6 border-y border-white/[0.06]">
-          <div className="text-center">
-            <div className="text-3xl font-black text-white">{siteConfig.stats.posts}</div>
-            <div className="text-xs text-white/40 mt-1">Posts generated</div>
-          </div>
-          <div className="w-px h-10 bg-white/10 hidden sm:block" />
-          <div className="text-center">
-            <div className="text-3xl font-black text-white">{siteConfig.stats.creators}</div>
-            <div className="text-xs text-white/40 mt-1">Creators using DraftCal</div>
-          </div>
-          <div className="w-px h-10 bg-white/10 hidden sm:block" />
-          <div className="text-center">
-            <div className="text-3xl font-black" style={{ background: 'linear-gradient(135deg, #ec4899, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{siteConfig.stats.platforms}</div>
-            <div className="text-xs text-white/40 mt-1">Platforms supported</div>
-          </div>
-        </div>
-      </section>
+            {/* LEFT — headline + niche input */}
+            <div className="flex flex-col gap-6">
+              <div>
+                <h1 className="font-black leading-[1.05] tracking-tight mb-4 fade-up delay-100"
+                  style={{ fontSize: 'clamp(2rem, 5vw, 3.8rem)' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.95)' }}>Content ideas</span>
+                  <br />
+                  <span style={{ background: 'linear-gradient(135deg, #22c55e 0%, #4ade80 60%, #86efac 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                    on autopilot
+                  </span>
+                </h1>
+                <p className="text-base leading-relaxed fade-up delay-200"
+                  style={{ color: 'rgba(255,255,255,0.5)', maxWidth: 460 }}>
+                  30 days of AI-generated posts for every platform — hooks, hashtags, and engagement tips — in under 5 minutes.
+                </p>
+              </div>
 
-      {/* ── Two-column: Calendar + Sample Posts ── */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pb-16">
-        <div className="grid md:grid-cols-2 gap-8">
-          {/* Calendar mockup */}
-          <div className="glass-liquid rounded-2xl p-5">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-bold text-white/80">May 2025</span>
-              <span className="pill-glass text-[11px] px-2.5 py-1 font-semibold"
-                style={{ color: '#f472b6' }}>This week ✦</span>
+              {/* NICHE INPUT — the hero CTA */}
+              <div className="fade-up delay-300">
+                <p className="text-xs font-semibold uppercase tracking-wider mb-2"
+                  style={{ color: 'rgba(134,239,172,0.7)' }}>
+                  What&apos;s your niche?
+                </p>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={heroNiche}
+                    onChange={e => setHeroNiche(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleHeroGenerate()}
+                    placeholder="e.g. fitness coaching, SaaS startup, travel creator…"
+                    className="flex-1 rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                    style={{
+                      background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(34,197,94,0.2)',
+                      color: 'rgba(255,255,255,0.9)',
+                    }}
+                    onFocus={e => (e.target.style.borderColor = 'rgba(34,197,94,0.5)')}
+                    onBlur={e => (e.target.style.borderColor = 'rgba(34,197,94,0.2)')}
+                  />
+                  <button
+                    onClick={handleHeroGenerate}
+                    disabled={!heroNiche || loading}
+                    className="btn-press px-5 py-3 rounded-xl font-bold text-sm transition-all"
+                    style={{
+                      background: heroNiche ? 'linear-gradient(135deg, #16a34a, #22c55e)' : 'rgba(34,197,94,0.2)',
+                      color: heroNiche ? 'white' : 'rgba(134,239,172,0.5)',
+                      cursor: heroNiche ? 'pointer' : 'not-allowed',
+                      boxShadow: heroNiche ? '0 0 24px rgba(34,197,94,0.3)' : 'none',
+                    }}>
+                    {loading ? '…' : 'Generate →'}
+                  </button>
+                </div>
+                <p className="text-[11px] mt-2" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                  {remaining} free generations left · No credit card needed
+                </p>
+              </div>
+
+              {/* Platform pills */}
+              <div className="flex flex-wrap gap-2 fade-up delay-400">
+                {Object.entries(PLATFORM_META).map(([label, meta]) => (
+                  <span key={label}
+                    className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border font-medium"
+                    style={{ color: meta.color, background: meta.bg, borderColor: meta.border }}>
+                    <span className="font-bold text-[11px]">{meta.icon}</span> {label}
+                  </span>
+                ))}
+              </div>
+
+              {/* "30 days in 5 minutes" callout */}
+              <div className="flex items-center gap-4 fade-up delay-500">
+                {[
+                  { label: '30 days', sub: 'of content' },
+                  { label: '5 min', sub: 'to generate' },
+                  { label: '5 platforms', sub: 'supported' },
+                ].map(stat => (
+                  <div key={stat.label} className="text-center">
+                    <div className="text-lg font-black" style={{ color: '#22c55e' }}>{stat.label}</div>
+                    <div className="text-[10px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.3)' }}>{stat.sub}</div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="grid grid-cols-7 gap-1 mb-1">
-              {DAY_LABELS.map(d => (
-                <div key={d} className="text-center text-[10px] font-semibold text-white/30 py-1">{d}</div>
-              ))}
-            </div>
-            <div className="grid grid-cols-7 gap-1">
-              {CAL_DAYS.map(day => {
-                const dots = CAL_DOTS[day] || [];
-                const isThisWeek = THIS_WEEK.has(day);
-                return (
-                  <div key={day}
-                    className={`rounded-lg p-1.5 flex flex-col items-center gap-1 transition-all ${
-                      isThisWeek
-                        ? 'border'
-                        : 'bg-white/[0.03] border border-white/[0.06] hover:border-white/15'
-                    }`}
-                    style={isThisWeek ? { background: 'rgba(236,72,153,0.12)', borderColor: 'rgba(236,72,153,0.35)' } : {}}>
-                    <span className={`text-[11px] font-semibold leading-none`}
-                      style={isThisWeek ? { color: '#f9a8d4' } : { color: 'rgba(255,255,255,0.5)' }}>
-                      {day}
+
+            {/* RIGHT — Calendar grid (desktop only) */}
+            <div className="hidden lg:block fade-up delay-200">
+              <div className="rounded-2xl p-5 border"
+                style={{ background: 'rgba(255,255,255,0.025)', borderColor: 'rgba(34,197,94,0.15)' }}>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-sm font-bold" style={{ color: 'rgba(255,255,255,0.8)' }}>May 2025</span>
+                  <div className="flex items-center gap-2">
+                    {Object.entries(PLATFORM_META).slice(0, 3).map(([label, meta]) => (
+                      <span key={label} className="text-[9px] px-1.5 py-0.5 rounded-full font-semibold"
+                        style={{ color: meta.color, background: meta.bg, border: `1px solid ${meta.border}` }}>
+                        {meta.icon} {meta.short}
+                      </span>
+                    ))}
+                    <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.3)' }}>+2 more</span>
+                  </div>
+                </div>
+
+                {/* Day labels */}
+                <div className="grid grid-cols-7 gap-1 mb-1">
+                  {DAY_LABELS.map(d => (
+                    <div key={d} className="text-center text-[9px] font-semibold py-1"
+                      style={{ color: 'rgba(255,255,255,0.25)' }}>{d}</div>
+                  ))}
+                </div>
+
+                {/* Calendar cells */}
+                <div className="grid grid-cols-7 gap-1">
+                  {CAL_DAYS.map(day => (
+                    <CalCell key={day} day={day} post={HERO_POST_MAP.get(day)} />
+                  ))}
+                </div>
+
+                <div className="mt-3 pt-3 border-t flex items-center gap-1 flex-wrap"
+                  style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+                  <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.25)' }}>AI-generated:</span>
+                  {Object.entries(PLATFORM_META).map(([label, meta]) => (
+                    <span key={label} className="flex items-center gap-1 text-[9px]"
+                      style={{ color: meta.color }}>
+                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: meta.color }} />
+                      {label}
                     </span>
-                    {dots.length > 0 && (
-                      <div className="flex gap-0.5 flex-wrap justify-center">
-                        {dots.map((color, i) => (
-                          <span key={i} className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                            style={{ backgroundColor: color }} />
-                        ))}
-                      </div>
-                    )}
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile week strip (lg:hidden) */}
+          <div className="lg:hidden mt-8 fade-up delay-400">
+            <p className="text-[10px] font-semibold uppercase tracking-wider mb-3"
+              style={{ color: 'rgba(134,239,172,0.6)' }}>
+              This week — AI-scheduled
+            </p>
+            <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollSnapType: 'x mandatory' }}>
+              {MOBILE_WEEK_POSTS.map((post, i) => {
+                const meta = PLATFORM_META[post.platform];
+                return (
+                  <div key={i} className="flex-shrink-0 rounded-xl p-3 border"
+                    style={{
+                      width: 200,
+                      scrollSnapAlign: 'start',
+                      background: 'rgba(255,255,255,0.03)',
+                      borderColor: 'rgba(34,197,94,0.12)',
+                    }}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full font-semibold"
+                        style={{ color: meta?.color, background: meta?.bg, border: `1px solid ${meta?.border}` }}>
+                        {meta?.icon} {post.platform}
+                      </span>
+                      <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.3)' }}>Day {post.day}</span>
+                    </div>
+                    <p className="text-[11px] leading-snug line-clamp-3"
+                      style={{ color: 'rgba(255,255,255,0.65)' }}>
+                      {post.snippet}
+                    </p>
+                    <div className="mt-2 text-[9px] px-1.5 py-0.5 rounded inline-block"
+                      style={{ background: 'rgba(34,197,94,0.08)', color: 'rgba(134,239,172,0.6)' }}>
+                      {TYPE_LABELS[post.type] || post.type}
+                    </div>
                   </div>
                 );
               })}
             </div>
-            <div className="flex items-center gap-4 mt-4 pt-3 border-t border-white/[0.06]">
-              {[['#8b5cf6', 'LinkedIn'], ['#ec4899', 'Instagram'], ['#3b82f6', 'Twitter/X']].map(([color, label]) => (
-                <div key={label} className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
-                  <span className="text-[10px] text-white/40">{label}</span>
-                </div>
-              ))}
-            </div>
           </div>
+        </section>
 
-          {/* Sample generated post cards */}
-          <div className="space-y-3">
-            <p className="text-xs text-white/35 font-semibold uppercase tracking-widest mb-3">Sample AI-generated posts</p>
+        {/* ── HOW IT WORKS ─────────────────────────────────────────────── */}
+        <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-12">
+          <div className="flex flex-wrap items-center justify-center gap-0">
+            {[
+              { n: "1", label: "Tell us your niche", sub: "Brand, topic, or industry" },
+              { n: "→", label: "", sub: "", arrow: true },
+              { n: "2", label: "Pick platforms + tone", sub: "Instagram, LinkedIn, TikTok…" },
+              { n: "→", label: "", sub: "", arrow: true },
+              { n: "3", label: "AI generates 30 days", sub: "Hooks, hashtags, tips" },
+              { n: "→", label: "", sub: "", arrow: true },
+              { n: "4", label: "Copy, export, or schedule", sub: "One click to any tool" },
+            ].map((step, i) => step.arrow ? (
+              <span key={i} className="text-sm mx-3 hidden sm:block" style={{ color: 'rgba(34,197,94,0.4)' }}>→</span>
+            ) : (
+              <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl reveal"
+                style={{ minWidth: 160 }}>
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black flex-shrink-0"
+                  style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', color: '#22c55e' }}>
+                  {step.n}
+                </div>
+                <div>
+                  <div className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.85)' }}>{step.label}</div>
+                  <div className="text-[11px]" style={{ color: 'rgba(255,255,255,0.35)' }}>{step.sub}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── SAMPLE POSTS ─────────────────────────────────────────────── */}
+        <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-16">
+          <div className="text-center mb-8 reveal">
+            <p className="text-xs font-bold uppercase tracking-widest mb-2"
+              style={{ color: 'rgba(134,239,172,0.6)' }}>
+              Sample AI-generated posts
+            </p>
+            <h2 className="text-2xl font-black" style={{ color: 'rgba(255,255,255,0.9)' }}>
+              What your calendar looks like
+            </h2>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {SAMPLE_POSTS.map((post, i) => (
               <PostCard key={i} post={post} index={i} showAnalytics={false} onSchedule={() => setShowProModal(true)} />
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── WHY PRO section ── */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pb-16">
-        <div className="rounded-3xl border p-8 md:p-12"
-          style={{ background: 'linear-gradient(135deg, rgba(236,72,153,0.08) 0%, rgba(139,92,246,0.08) 50%, rgba(59,130,246,0.08) 100%)', borderColor: 'rgba(236,72,153,0.2)' }}>
-          <div className="text-center mb-8">
-            <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#f472b6' }}>WHY PRO</span>
-            <h2 className="text-3xl md:text-4xl font-black mt-2 mb-2">Everything you need to<br />
-              <span style={{ background: 'linear-gradient(135deg, #ec4899, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                dominate social media
+        {/* ── AI GENERATOR ──────────────────────────────────────────────── */}
+        <section id="generator" ref={generatorRef} className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-24">
+          <div className="text-center mb-8 reveal">
+            <h2 className="text-3xl font-black mb-2">
+              <span style={{ background: 'linear-gradient(135deg, #22c55e, #4ade80)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                Generate your calendar
               </span>
             </h2>
-            <p className="text-white/40 text-sm">One plan. One price. Unlimited content.</p>
+            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.35)' }}>
+              {remaining} free generation{remaining !== 1 ? 's' : ''} left today
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-            {[
-              { icon: '∞', title: 'Unlimited content', desc: 'Generate as many calendars as you need — no daily caps, no throttling.' },
-              { icon: '📱', title: 'All 5 platforms', desc: 'Twitter/X, LinkedIn, Instagram, TikTok, Facebook — all covered, all optimised.' },
-              { icon: '🔗', title: 'Scheduling links', desc: 'One-click scheduling links for every post. Connect Buffer, Later, or Hootsuite.' },
-              { icon: '📊', title: 'Analytics', desc: 'Full analytics dashboard — track reach, engagement rate, and top-performing content.' },
-              { icon: '👥', title: 'Team seats', desc: 'Invite teammates. Collaborate on your brand calendar in real time.' },
-              { icon: '🧠', title: 'Brand voice memory', desc: 'AI learns your tone and style — every post sounds authentically you.' },
-            ].map(f => (
-              <div key={f.title} className="glass-liquid rounded-xl p-5">
-                <div className="text-2xl mb-3 font-black" style={{ color: '#f472b6' }}>{f.icon}</div>
-                <div className="font-bold text-sm text-white/90 mb-1">{f.title}</div>
-                <div className="text-xs text-white/45 leading-relaxed">{f.desc}</div>
-              </div>
-            ))}
-          </div>
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Config panel */}
+            <div className="space-y-5">
+              <div className="rounded-2xl border p-6"
+                style={{ background: 'rgba(255,255,255,0.025)', borderColor: 'rgba(34,197,94,0.12)' }}>
+                <h3 className="font-bold text-sm mb-5" style={{ color: 'rgba(255,255,255,0.85)' }}>Configure your calendar</h3>
+                <div className="space-y-5">
 
-          {/* Pricing CTA */}
-          <div className="text-center">
-            <button onClick={() => setShowProModal(true)}
-              className="px-10 py-4 rounded-2xl font-black text-lg transition-all hover:opacity-90 inline-flex items-center gap-3"
-              style={{ background: 'linear-gradient(135deg, #ec4899, #8b5cf6)', boxShadow: '0 0 50px rgba(236,72,153,0.35), 0 8px 30px rgba(0,0,0,0.4)' }}>
-              ✦ Get Pro — $10/mo
-            </button>
-            <p className="text-white/30 text-xs mt-3">Cancel anytime · No contracts · Instant access</p>
-          </div>
-        </div>
-      </section>
+                  <div>
+                    <label className="text-xs uppercase tracking-wider mb-2 block"
+                      style={{ color: 'rgba(255,255,255,0.4)' }}>Brand / Topic</label>
+                    <textarea
+                      value={topic}
+                      onChange={e => setTopic(e.target.value)}
+                      placeholder="e.g. SaaS startup for freelancers, fitness coaching for busy moms…"
+                      rows={3}
+                      className="w-full rounded-xl px-4 py-3 text-sm outline-none resize-none transition-all"
+                      style={{
+                        background: 'rgba(255,255,255,0.04)',
+                        border: '1px solid rgba(34,197,94,0.15)',
+                        color: 'rgba(255,255,255,0.9)',
+                      }}
+                      onFocus={e => (e.target.style.borderColor = 'rgba(34,197,94,0.4)')}
+                      onBlur={e => (e.target.style.borderColor = 'rgba(34,197,94,0.15)')}
+                    />
+                  </div>
 
-      {/* ── AI generation section ── */}
-      <section id="generator" className="relative z-10 max-w-7xl mx-auto px-6 pb-24">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-black mb-2">
-            <span style={{ background: 'linear-gradient(135deg, #ec4899, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Generate your calendar
-            </span>
-          </h2>
-          <p className="text-white/35 text-sm">{remaining} free generations left today</p>
-        </div>
+                  <div>
+                    <label className="text-xs uppercase tracking-wider mb-2 block"
+                      style={{ color: 'rgba(255,255,255,0.4)' }}>Platforms</label>
+                    <div className="flex flex-wrap gap-2">
+                      {PLATFORMS.map(p => {
+                        const meta = PLATFORM_META[p];
+                        const active = platforms.includes(p);
+                        return (
+                          <button key={p} onClick={() => togglePlatform(p)}
+                            className="btn-press px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                            style={{
+                              color: active ? meta?.color : 'rgba(255,255,255,0.45)',
+                              background: active ? meta?.bg : 'rgba(255,255,255,0.03)',
+                              border: `1px solid ${active ? meta?.border : 'rgba(255,255,255,0.08)'}`,
+                            }}>
+                            {meta?.icon} {p}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Config panel */}
-          <div className="space-y-5">
-            <div className="glass-liquid rounded-2xl p-7">
-              <h3 className="font-bold text-base mb-5">Configure your calendar</h3>
-              <div className="space-y-5">
-                <div>
-                  <label className="text-xs text-white/50 uppercase tracking-wider mb-2 block">Brand / Topic</label>
-                  <textarea
-                    value={topic}
-                    onChange={(e) => setTopic(e.target.value)}
-                    placeholder="e.g. SaaS startup for freelancers, fitness coaching for busy moms..."
-                    rows={3}
-                    className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/30 focus:outline-none transition-all resize-none"
-                    style={{ focusBorderColor: 'rgba(236,72,153,0.6)' } as React.CSSProperties}
-                    onFocus={e => e.target.style.borderColor = 'rgba(236,72,153,0.5)'}
-                    onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
-                  />
+                  <div>
+                    <label className="text-xs uppercase tracking-wider mb-2 block"
+                      style={{ color: 'rgba(255,255,255,0.4)' }}>Tone</label>
+                    <div className="flex flex-wrap gap-2">
+                      {TONES.map(t => (
+                        <button key={t} onClick={() => setTone(t)}
+                          className="btn-press px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                          style={{
+                            color: tone === t ? '#86efac' : 'rgba(255,255,255,0.45)',
+                            background: tone === t ? 'rgba(34,197,94,0.12)' : 'rgba(255,255,255,0.03)',
+                            border: `1px solid ${tone === t ? 'rgba(34,197,94,0.35)' : 'rgba(255,255,255,0.08)'}`,
+                          }}>
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs uppercase tracking-wider mb-2 block"
+                      style={{ color: 'rgba(255,255,255,0.4)' }}>
+                      Weeks — <span style={{ color: '#22c55e' }}>{weeks}w</span>
+                    </label>
+                    <input type="range" min={1} max={4} value={weeks}
+                      onChange={e => setWeeks(Number(e.target.value))}
+                      className="w-full accent-green-500" />
+                    <div className="flex justify-between text-[10px] mt-1" style={{ color: 'rgba(255,255,255,0.2)' }}>
+                      <span>1w</span><span>2w</span><span>3w</span><span>4w</span>
+                    </div>
+                  </div>
+
+                  {isLimited ? (
+                    <div className="w-full py-3.5 rounded-xl border text-center"
+                      style={{ background: 'rgba(34,197,94,0.06)', borderColor: 'rgba(34,197,94,0.2)' }}>
+                      <p className="text-sm font-semibold" style={{ color: '#86efac' }}>Daily limit reached (3 free / day)</p>
+                      <button onClick={() => setShowProModal(true)}
+                        className="text-xs mt-0.5 transition-colors hover:opacity-80"
+                        style={{ color: 'rgba(255,255,255,0.5)' }}>
+                        Upgrade to Pro for unlimited →
+                      </button>
+                    </div>
+                  ) : (
+                    <button onClick={() => generate()} disabled={!topic || loading}
+                      className="btn-press w-full py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2"
+                      style={{
+                        background: topic ? 'linear-gradient(135deg, #16a34a, #22c55e)' : 'rgba(34,197,94,0.15)',
+                        color: topic ? 'white' : 'rgba(134,239,172,0.4)',
+                        cursor: (!topic || loading) ? 'not-allowed' : 'pointer',
+                        boxShadow: topic ? '0 0 25px rgba(34,197,94,0.25)' : 'none',
+                        opacity: loading ? 0.8 : 1,
+                      }}>
+                      {loading ? (
+                        <><div className="w-4 h-4 border-2 rounded-full animate-spin"
+                          style={{ borderColor: 'rgba(255,255,255,0.3)', borderTopColor: 'white' }} />Generating…</>
+                      ) : `Generate calendar (${remaining} left)`}
+                    </button>
+                  )}
                 </div>
+              </div>
 
-                <div>
-                  <label className="text-xs text-white/50 uppercase tracking-wider mb-2 block">Platforms</label>
-                  <div className="flex flex-wrap gap-2">
-                    {PLATFORMS.map((p) => (
-                      <button key={p} onClick={() => togglePlatform(p)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                          platforms.includes(p)
-                            ? "border text-pink-300"
-                            : "bg-white/[0.04] border border-white/10 text-white/50 hover:border-white/20"
-                        }`}
-                        style={platforms.includes(p) ? { background: 'rgba(236,72,153,0.15)', borderColor: 'rgba(236,72,153,0.4)' } : {}}>
+              {/* Quick actions when posts available */}
+              {posts.length > 0 && (
+                <div className="rounded-xl border p-4 flex gap-2"
+                  style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(34,197,94,0.1)' }}>
+                  <button onClick={copyAll}
+                    className="btn-press flex-1 py-2 rounded-lg text-xs font-medium border transition-all"
+                    style={{ borderColor: 'rgba(34,197,94,0.2)', color: 'rgba(134,239,172,0.7)', background: 'rgba(34,197,94,0.06)' }}>
+                    Copy all
+                  </button>
+                  <button onClick={downloadCSV}
+                    className="btn-press flex-1 py-2 rounded-lg text-xs font-medium border transition-all"
+                    style={{ borderColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)', background: 'rgba(255,255,255,0.03)' }}>
+                    Export CSV
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Results grid */}
+            <div className="lg:col-span-2">
+              {posts.length > 0 && (
+                <div className="flex items-center gap-2 mb-4 flex-wrap">
+                  <div className="flex gap-1.5 flex-wrap">
+                    {["All", ...platforms].map(p => (
+                      <button key={p} onClick={() => setFilterPlatform(p)}
+                        className="btn-press text-xs px-3 py-1 rounded-full border transition-all"
+                        style={{
+                          color: filterPlatform === p ? '#86efac' : 'rgba(255,255,255,0.4)',
+                          background: filterPlatform === p ? 'rgba(34,197,94,0.1)' : 'transparent',
+                          borderColor: filterPlatform === p ? 'rgba(34,197,94,0.35)' : 'rgba(255,255,255,0.1)',
+                        }}>
                         {p}
                       </button>
                     ))}
                   </div>
+                  {types.length > 0 && (
+                    <>
+                      <div className="h-4 w-px mx-1" style={{ background: 'rgba(255,255,255,0.1)' }} />
+                      <div className="flex gap-1.5 flex-wrap">
+                        {["All", ...types].map(t => (
+                          <button key={t} onClick={() => setFilterType(t)}
+                            className="btn-press text-xs px-3 py-1 rounded-full border transition-all"
+                            style={{
+                              color: filterType === t ? '#86efac' : 'rgba(255,255,255,0.4)',
+                              background: filterType === t ? 'rgba(34,197,94,0.08)' : 'transparent',
+                              borderColor: filterType === t ? 'rgba(34,197,94,0.25)' : 'rgba(255,255,255,0.1)',
+                            }}>
+                            {TYPE_LABELS[t] || t}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                  <span className="ml-auto text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                    {filteredPosts.length} posts
+                  </span>
                 </div>
+              )}
 
-                <div>
-                  <label className="text-xs text-white/50 uppercase tracking-wider mb-2 block">Tone</label>
-                  <div className="flex flex-wrap gap-2">
-                    {TONES.map((t) => (
-                      <button key={t} onClick={() => setTone(t)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                          tone === t
-                            ? "border text-purple-300"
-                            : "bg-white/[0.04] border border-white/10 text-white/50 hover:border-white/20"
-                        }`}
-                        style={tone === t ? { background: 'rgba(139,92,246,0.15)', borderColor: 'rgba(139,92,246,0.4)' } : {}}>
-                        {t}
-                      </button>
+              {apiError && (
+                <div className="rounded-2xl border p-6 text-center mb-4"
+                  style={{ borderColor: 'rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.08)' }}>
+                  <p className="font-semibold mb-1" style={{ color: '#fca5a5' }}>Could not generate calendar</p>
+                  <p className="text-sm" style={{ color: 'rgba(252,165,165,0.7)' }}>{apiError}</p>
+                </div>
+              )}
+
+              {filteredPosts.length > 0 ? (
+                <div ref={resultsRef} className="grid sm:grid-cols-2 gap-4">
+                  {filteredPosts.map((post, i) => (
+                    <PostCard key={i} post={post} index={i} showAnalytics={false} onSchedule={() => setShowProModal(true)} />
+                  ))}
+                </div>
+              ) : posts.length > 0 ? (
+                <div className="h-48 rounded-2xl border flex items-center justify-center"
+                  style={{ borderColor: 'rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)' }}>
+                  <p className="text-sm" style={{ color: 'rgba(255,255,255,0.3)' }}>No posts match the current filter</p>
+                </div>
+              ) : (
+                <div className="rounded-2xl border flex flex-col items-center justify-center py-20 gap-4"
+                  style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(34,197,94,0.08)' }}>
+                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl"
+                    style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.25)' }}>
+                    📅
+                  </div>
+                  <p className="text-sm max-w-xs text-center" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                    Describe your brand above and click generate to fill your content calendar
+                  </p>
+                  <div className="flex flex-wrap gap-2 justify-center mt-1">
+                    {["Copy each post with 1 click", "Platform-specific hashtags", "Engagement tips included", "Export to CSV"].map(f => (
+                      <span key={f} className="text-[10px] px-2.5 py-1 rounded-full border"
+                        style={{ borderColor: 'rgba(34,197,94,0.15)', color: 'rgba(134,239,172,0.5)', background: 'rgba(34,197,94,0.05)' }}>
+                        {f}
+                      </span>
                     ))}
                   </div>
                 </div>
-
-                <div>
-                  <label className="text-xs text-white/50 uppercase tracking-wider mb-2 block">
-                    Weeks to generate <span style={{ color: '#f472b6' }}>{weeks}w</span>
-                  </label>
-                  <input type="range" min={1} max={4} value={weeks}
-                    onChange={(e) => setWeeks(Number(e.target.value))}
-                    className="w-full accent-pink-500" />
-                  <div className="flex justify-between text-[10px] text-white/25 mt-1">
-                    <span>1w</span><span>2w</span><span>3w</span><span>4w</span>
-                  </div>
-                </div>
-
-                {isLimited ? (
-                  <div className="w-full py-3.5 rounded-xl border text-center"
-                    style={{ background: 'rgba(236,72,153,0.06)', borderColor: 'rgba(236,72,153,0.2)' }}>
-                    <p className="text-sm font-semibold" style={{ color: '#f472b6' }}>Daily limit reached (3 free / day)</p>
-                    <button onClick={() => setShowProModal(true)} className="text-xs text-white/50 mt-0.5 hover:text-white transition-colors">
-                      Upgrade to Pro for unlimited →
-                    </button>
-                  </div>
-                ) : (
-                  <button onClick={generate} disabled={!topic || loading}
-                    className="w-full py-3.5 rounded-xl font-bold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    style={{ background: 'linear-gradient(135deg, #ec4899, #8b5cf6)', boxShadow: '0 0 25px rgba(236,72,153,0.3)' }}>
-                    {loading ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Generating...
-                      </>
-                    ) : `✦ Generate calendar (${remaining} left today)`}
-                  </button>
-                )}
-              </div>
+              )}
             </div>
-
-            {/* Analytics summary */}
-            {posts.length > 0 && (
-              <div className="glass-liquid rounded-2xl p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-semibold">Analytics preview</span>
-                  <button onClick={() => setShowAnalytics(s => !s)}
-                    className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${showAnalytics ? 'border-pink-500/30 bg-pink-500/10 text-pink-300' : 'border-white/10 text-white/40'}`}>
-                    {showAnalytics ? 'On' : 'Off'}
-                  </button>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/8 text-center">
-                    <div className="text-lg font-black text-white/90">
-                      <NumberTicker value={Math.round(totalReach / 100) / 10} decimalPlaces={1} suffix="k" />
-                    </div>
-                    <div className="text-[10px] text-white/35">est. total reach</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/8 text-center">
-                    <div className="text-lg font-black text-white/90">
-                      <NumberTicker value={posts.length} />
-                    </div>
-                    <div className="text-[10px] text-white/35">posts scheduled</div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Platform Insights */}
-            {platformsWithTips.length > 0 && (
-              <div className="glass-liquid rounded-2xl p-5">
-                <button onClick={() => setShowInsights(o => !o)}
-                  className="w-full flex items-center justify-between mb-1">
-                  <span className="text-sm font-semibold">Platform insights</span>
-                  <span className="text-white/40 text-xs">{showInsights ? '▲ Hide' : '▼ Show'}</span>
-                </button>
-                {showInsights && (
-                  <div className="space-y-3 mt-3">
-                    {platformsWithTips.map(pl => {
-                      const tips = posts.find(p => p.platform === pl)?.platform_tips!;
-                      return <PlatformInsight key={pl} platform={pl} tips={tips} />;
-                    })}
-                  </div>
-                )}
-              </div>
-            )}
           </div>
+        </section>
 
-          {/* Calendar grid / results */}
-          <div className="lg:col-span-2">
-            {posts.length > 0 && (
-              <div className="flex items-center gap-2 mb-4 flex-wrap">
-                <div className="flex gap-1.5 flex-wrap">
-                  {["All", ...platforms].map(p => (
-                    <button key={p} onClick={() => setFilterPlatform(p)}
-                      className={`text-xs px-3 py-1 rounded-full border transition-all ${
-                        filterPlatform === p
-                          ? 'text-pink-300 border-pink-500/40 bg-pink-500/10'
-                          : 'border-white/10 text-white/40 hover:border-white/20 hover:text-white/70'
-                      }`}>
-                      {p}
-                    </button>
-                  ))}
-                </div>
-                <div className="h-4 w-px bg-white/10 mx-1" />
-                <div className="flex gap-1.5 flex-wrap">
-                  {["All", ...types].map(t => (
-                    <button key={t} onClick={() => setFilterType(t)}
-                      className={`text-xs px-3 py-1 rounded-full border transition-all ${
-                        filterType === t
-                          ? 'text-purple-300 border-purple-500/40 bg-purple-500/10'
-                          : 'border-white/10 text-white/40 hover:border-white/20 hover:text-white/70'
-                      }`}>
-                      {TYPE_LABELS[t] || t}
-                    </button>
-                  ))}
-                </div>
-                <span className="ml-auto text-xs text-white/30">{filteredPosts.length} posts</span>
-              </div>
-            )}
-
-            {apiError && (
-              <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-6 text-center mb-4">
-                <p className="text-red-300 font-semibold mb-1">Could not generate calendar</p>
-                <p className="text-red-300/70 text-sm">{apiError}</p>
-              </div>
-            )}
-
-            {filteredPosts.length > 0 ? (
-              <div ref={resultsRef} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {filteredPosts.map((post, i) => (
-                  <PostCard key={i} post={post} index={i} showAnalytics={showAnalytics} onSchedule={() => setShowProModal(true)} />
-                ))}
-              </div>
-            ) : posts.length > 0 ? (
-              <div className="h-48 rounded-2xl border border-white/5 bg-white/[0.02] flex items-center justify-center">
-                <p className="text-white/30 text-sm">No posts match the current filter</p>
-              </div>
-            ) : (
-              <div className="h-full glass-liquid rounded-2xl flex flex-col items-center justify-center py-24 gap-4">
-                <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl"
-                  style={{ background: 'linear-gradient(135deg, rgba(236,72,153,0.25), rgba(139,92,246,0.25))', border: '1px solid rgba(236,72,153,0.3)' }}>
-                  📅
-                </div>
-                <p className="text-white/40 text-sm max-w-xs text-center">
-                  Describe your brand and click generate to fill your content calendar
-                </p>
-                <div className="flex flex-wrap gap-2 justify-center mt-2">
-                  {["Copy each post with 1 click", "Analytics preview per post", "Trending hashtags included", "Filter by platform or type"].map(f => (
-                    <span key={f} className="pill-glass text-[10px] px-2.5 py-1 text-white/40">{f}</span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Pricing section ── */}
-      <section id="pricing" className="relative z-10 border-t border-white/5 px-6 py-20">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="text-4xl font-black tracking-tight mb-2">
-              <span style={{ background: 'linear-gradient(135deg, #ec4899, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+        {/* ── PRICING ──────────────────────────────────────────────────── */}
+        <section id="pricing" className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 pb-20">
+          <div className="text-center mb-10 reveal">
+            <h2 className="text-3xl font-black mb-2">
+              <span style={{ background: 'linear-gradient(135deg, #22c55e, #4ade80)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                 Simple pricing
               </span>
             </h2>
-            <p className="text-white/35 text-sm">3 free calendars per day · No card required</p>
+            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.35)' }}>3 free calendars per day · No card required</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-px border border-white/10 rounded-2xl overflow-hidden">
-            <div className="p-8 bg-white/[0.02]">
-              <div className="text-xs font-bold uppercase tracking-widest mb-1 text-white/25">Free</div>
-              <div className="text-4xl font-black mb-0.5 text-white/40">$0</div>
-              <div className="text-sm mb-5 text-white/20">forever</div>
+          <div className="grid md:grid-cols-2 gap-4">
+            {/* Free */}
+            <div className="rounded-2xl border p-8"
+              style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.07)' }}>
+              <div className="text-xs font-bold uppercase tracking-widest mb-1"
+                style={{ color: 'rgba(255,255,255,0.25)' }}>Free</div>
+              <div className="text-4xl font-black mb-1" style={{ color: 'rgba(255,255,255,0.4)' }}>$0</div>
+              <div className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.2)' }}>forever</div>
               <ul className="space-y-2.5 mb-7">
-                {['3 calendars / day', '5 platforms', 'Up to 4 weeks', 'Engagement tips', 'Analytics preview', 'Copy with 1 click'].map(f => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-white/30">
-                    <span className="text-white/20 mt-0.5">✓</span> {f}
+                {['3 calendars / day', '5 platforms', 'Up to 4 weeks', 'Engagement tips', 'Copy & export'].map(f => (
+                  <li key={f} className="flex items-center gap-2 text-sm" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                    <span style={{ color: 'rgba(255,255,255,0.2)' }}>✓</span> {f}
                   </li>
                 ))}
               </ul>
-              <button className="w-full py-3 rounded-xl text-sm font-bold border border-white/10 text-white/30 cursor-default">
+              <div className="w-full py-3 rounded-xl border text-center text-sm font-bold"
+                style={{ borderColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.25)' }}>
                 Current plan
-              </button>
+              </div>
             </div>
-            <div className="p-8" style={{ background: 'linear-gradient(135deg, rgba(236,72,153,0.12) 0%, rgba(139,92,246,0.12) 100%)' }}>
-              <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#f472b6' }}>Pro</div>
-              <div className="text-4xl font-black mb-0.5 text-white">$10</div>
-              <div className="text-sm mb-5" style={{ color: '#ec4899' }}>/month</div>
+            {/* Pro */}
+            <div className="rounded-2xl border p-8 relative overflow-hidden"
+              style={{ background: 'rgba(34,197,94,0.06)', borderColor: 'rgba(34,197,94,0.25)', boxShadow: '0 0 40px rgba(34,197,94,0.08)' }}>
+              <div className="absolute top-4 right-4 text-[10px] px-2.5 py-1 rounded-full font-bold"
+                style={{ background: 'rgba(34,197,94,0.15)', color: '#86efac', border: '1px solid rgba(34,197,94,0.3)' }}>
+                Most popular
+              </div>
+              <div className="text-xs font-bold uppercase tracking-widest mb-1"
+                style={{ color: '#86efac' }}>Pro</div>
+              <div className="text-4xl font-black mb-0" style={{ color: 'white' }}>$10</div>
+              <div className="text-sm mb-6" style={{ color: '#22c55e' }}>/month</div>
               <ul className="space-y-2.5 mb-7">
-                {['Unlimited calendars', 'All 5 platforms', 'Scheduling links', 'Full analytics dashboard', 'Team seats', 'Brand voice memory'].map(f => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-white/70">
-                    <span className="mt-0.5" style={{ color: '#f472b6' }}>✓</span> {f}
+                {['Unlimited calendars', 'All 5 platforms', 'Scheduling links', 'Full analytics dashboard', 'Brand voice memory', 'Team seats'].map(f => (
+                  <li key={f} className="flex items-center gap-2 text-sm" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                    <span style={{ color: '#22c55e' }}>✓</span> {f}
                   </li>
                 ))}
               </ul>
               <button onClick={() => setShowProModal(true)}
-                className="w-full py-3 rounded-xl text-sm font-bold transition-all hover:opacity-90"
-                style={{ background: 'linear-gradient(135deg, #ec4899, #8b5cf6)' }}>
+                className="btn-press w-full py-3 rounded-xl font-bold text-sm transition-all"
+                style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)', color: 'white', boxShadow: '0 0 25px rgba(34,197,94,0.3)' }}>
                 Go Pro ✦
               </button>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── Contextual Affiliates ── */}
-      <section className="relative z-10 max-w-4xl mx-auto px-6 pb-16">
-        <DraftCalAffiliates />
-      </section>
-
-      {/* ── VS COMPETITORS ── */}
-      <section className="relative z-10 max-w-4xl mx-auto px-6 pb-16">
-        <div className="text-center mb-8">
-          <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color:'#f472b6' }}>How we compare</p>
-          <h2 className="text-2xl font-black text-white" style={{ letterSpacing:'-0.02em' }}>AI generation vs. manual scheduling</h2>
-        </div>
-        <div style={{ overflowX:'auto' }}>
-          <table style={{ width:'100%', borderCollapse:'collapse', fontSize:13, color:'rgba(255,255,255,0.7)' }}>
-            <thead>
-              <tr style={{ borderBottom:'1px solid rgba(255,255,255,0.08)' }}>
-                {['Feature','DraftCal','Buffer','Later','Hootsuite'].map((h,i) => (
-                  <th key={h} style={{ padding:'10px 12px', textAlign:'left', fontSize:11, fontWeight:700, letterSpacing:'0.06em', textTransform:'uppercase', color: i===1 ? '#f472b6' : 'rgba(255,255,255,0.3)' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                ['AI content generation','✓ Full month','✗','✗','Partial'],
-                ['Platform-specific hooks & hashtags','✓ Auto','Manual','Manual','Manual'],
-                ['Engagement tips per post','✓ Built-in','✗','✗','✗'],
-                ['Content calendar (30 days)','✓ In seconds','Manual','Manual','Manual'],
-                ['Free tier','3/day','3 channels','1 profile','30 days'],
-                ['Price (pro)','$10/mo','$18/mo','$18/mo','$99/mo'],
-              ].map(row => (
-                <tr key={row[0]} style={{ borderBottom:'1px solid rgba(255,255,255,0.05)' }}>
-                  {row.map((cell,i) => (
-                    <td key={i} style={{ padding:'10px 12px', fontWeight: i===0 ? 600 : 400, color: i===1 ? (cell==='✓ Full month'||cell==='✓ Auto'||cell==='✓ Built-in'||cell==='✓ In seconds'||cell==='3/day'||cell==='$10/mo' ? '#34d399' : 'rgba(255,255,255,0.6)') : (cell==='✗' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.5)') }}>
-                      {cell}
-                    </td>
+        {/* ── VS COMPARISON ────────────────────────────────────────────── */}
+        <section className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 pb-16">
+          <div className="text-center mb-8 reveal">
+            <p className="text-xs font-bold uppercase tracking-widest mb-2"
+              style={{ color: 'rgba(134,239,172,0.6)' }}>How we compare</p>
+            <h2 className="text-2xl font-black" style={{ color: 'rgba(255,255,255,0.9)' }}>
+              AI generation vs. manual scheduling
+            </h2>
+          </div>
+          <div className="overflow-x-auto rounded-2xl border"
+            style={{ borderColor: 'rgba(34,197,94,0.12)', background: 'rgba(255,255,255,0.02)' }}>
+            <table className="w-full" style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                  {['Feature', 'DraftCal', 'Buffer', 'Later', 'Hootsuite'].map((h, i) => (
+                    <th key={h} style={{
+                      padding: '12px 16px', textAlign: 'left', fontSize: 11,
+                      fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
+                      color: i === 1 ? '#86efac' : 'rgba(255,255,255,0.3)',
+                    }}>{h}</th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-white/5 px-6 py-10">
-        <div style={{ maxWidth:960, margin:'0 auto', display:'flex', flexWrap:'wrap', justifyContent:'space-between', gap:24, marginBottom:20 }}>
-          <div>
-            <div style={{ fontSize:16, fontWeight:900, background:'linear-gradient(135deg,#ec4899,#8b5cf6,#3b82f6)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', marginBottom:6 }}>DraftCal</div>
-            <p style={{ fontSize:12, color:'rgba(255,255,255,0.25)', maxWidth:200, lineHeight:1.6 }}>AI-powered social media calendar for creators and brands.</p>
-          </div>
-          <div style={{ display:'flex', gap:36, flexWrap:'wrap' }}>
-            <div>
-              <p style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.2)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:10 }}>Product</p>
-              <div style={{ display:'flex', flexDirection:'column', gap:7 }}>
-                {[['Calendar generator','/#generator'],['Pricing','/#pricing'],['About','/about']].map(([l,href])=>(
-                  <a key={l} href={href} style={{ fontSize:12, color:'rgba(255,255,255,0.35)', textDecoration:'none', cursor:'pointer' }}>{l}</a>
+              </thead>
+              <tbody>
+                {[
+                  ['AI content generation', '✓ Full month', '✗', '✗', 'Partial'],
+                  ['Platform hooks & hashtags', '✓ Auto', 'Manual', 'Manual', 'Manual'],
+                  ['Engagement tips per post', '✓ Built-in', '✗', '✗', '✗'],
+                  ['30-day calendar in seconds', '✓', 'Manual', 'Manual', 'Manual'],
+                  ['Free tier', '3/day', '3 channels', '1 profile', '30 days'],
+                  ['Price (pro)', '$10/mo', '$18/mo', '$18/mo', '$99/mo'],
+                ].map(row => (
+                  <tr key={row[0]} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                    {row.map((cell, i) => (
+                      <td key={i} style={{
+                        padding: '11px 16px',
+                        fontWeight: i === 0 ? 600 : 400,
+                        color: i === 1
+                          ? (['✓ Full month', '✓ Auto', '✓ Built-in', '✓', '3/day', '$10/mo'].includes(cell) ? '#86efac' : 'rgba(255,255,255,0.6)')
+                          : cell === '✗' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.5)',
+                      }}>{cell}</td>
+                    ))}
+                  </tr>
                 ))}
-              </div>
-            </div>
-            <div>
-              <p style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.2)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:10 }}>Company</p>
-              <div style={{ display:'flex', flexDirection:'column', gap:7 }}>
-                {[['About','/about'],['Privacy','/privacy'],['Cookie policy','/cookies'],['Terms','/terms']].map(([l,href])=>(
-                  <a key={l} href={href} style={{ fontSize:12, color:'rgba(255,255,255,0.35)', textDecoration:'none', cursor:'pointer' }}>{l}</a>
-                ))}
-              </div>
-            </div>
+              </tbody>
+            </table>
           </div>
-        </div>
-        <div style={{ paddingTop:16, borderTop:'1px solid rgba(255,255,255,0.05)', display:'flex', justifyContent:'space-between', flexWrap:'wrap', gap:10 }}>
-          <p style={{ fontSize:11, color:'rgba(255,255,255,0.2)' }}>© {new Date().getFullYear()} DraftCal · draftcal.app</p>
-          <div style={{ display:'flex', gap:16 }}>
-            {[['Privacy','/privacy'],['Cookies','/cookies'],['Terms','/terms']].map(([l,href])=>(
-              <a key={l} href={href} style={{ fontSize:11, color:'rgba(255,255,255,0.2)', textDecoration:'none', cursor:'pointer' }}>{l}</a>
-            ))}
-          </div>
-        </div>
-      </footer>
+        </section>
 
-      <DraftCalCookieBanner />
-      <GuidedTour steps={DRAFTCAL_TOUR} storageKey="draftcal_tour_v1" accentColor="#ec4899" />
-    </main>
+      </div>
     </>
   );
-}
-
-function DraftCalCookieBanner() {
-  const [visible, setVisible] = useState(false)
-  useEffect(() => {
-    if (!localStorage.getItem('dc_cookies_ok')) setVisible(true)
-  }, [])
-  if (!visible) return null
-  return (
-    <div style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:200, padding:'12px 24px',
-      background:'rgba(10,6,25,0.97)', borderTop:'1px solid rgba(236,72,153,0.2)',
-      backdropFilter:'blur(16px)', display:'flex', alignItems:'center', justifyContent:'space-between',
-      gap:16, flexWrap:'wrap' }}>
-      <p style={{ fontSize:12, color:'rgba(255,255,255,0.45)', maxWidth:600, lineHeight:1.5 }}>
-        We use essential cookies to keep DraftCal running. No tracking cookies, no third-party ads.{' '}
-        <a style={{ color:'#f472b6', textDecoration:'underline', cursor:'pointer' }}>Cookie policy</a>
-      </p>
-      <div style={{ display:'flex', gap:10 }}>
-        <button onClick={() => { localStorage.setItem('dc_cookies_ok','1'); setVisible(false) }}
-          style={{ fontSize:12, fontWeight:700, padding:'7px 20px', borderRadius:8,
-            background:'linear-gradient(135deg,#ec4899,#8b5cf6)', color:'#fff', border:'none', cursor:'pointer' }}>
-          Accept
-        </button>
-        <button onClick={() => setVisible(false)}
-          style={{ fontSize:12, fontWeight:500, padding:'7px 14px', borderRadius:8,
-            background:'transparent', color:'rgba(255,255,255,0.3)',
-            border:'1px solid rgba(255,255,255,0.1)', cursor:'pointer' }}>
-          Decline
-        </button>
-      </div>
-    </div>
-  )
 }
