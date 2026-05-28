@@ -6,6 +6,7 @@ import Footer from '../../components/Footer'
 import DesignEffects from '@/components/DesignEffects'
 import AnimatedBackground from '@/components/AnimatedBackground'
 import ChatBot from '@/components/ChatBot'
+import { getSiteFlags } from '@/lib/flags'
 import BackToTop from '@/components/BackToTop'
 import type { BrandConfig } from '@/components/SharedNavbar'
 import CookieConsent from "../../components/CookieConsent"
@@ -75,7 +76,8 @@ const faqJsonLd = {
   ],
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const flags = await getSiteFlags('draftcal')
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -124,7 +126,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SharedNavbar brand={brand} />
         <main className="flex-1 pt-16">{children}</main>
         <Footer siteName={siteConfig.name} />
-        <ChatBot />
+        {flags.chatbot && <ChatBot />}
         <BackToTop accentColor="#22c55e" />
         <CookieConsent />
         <StickyFooterCTA />
