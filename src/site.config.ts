@@ -1,8 +1,8 @@
 // site.config.ts — Single source of truth for DraftCal brand content
 export const siteConfig = {
   name: "DraftCal",
-  tagline: "AI Social Media Calendar",
-  description: "Plan, generate, and schedule social media content with AI. One dashboard for all platforms.",
+  tagline: "One prompt. 30 days of content.",
+  description: "AI writes platform-optimised posts for every channel — ready to schedule in under 5 minutes.",
   url: "https://draftcal.app",
   primaryColor: "#7c3aed",
   accentColor: "#ec4899",
@@ -10,7 +10,7 @@ export const siteConfig = {
   icon: "📅",
   stats: { posts: "AI-powered", creators: "Free to start", platforms: "5 Platforms" },
   chatbot: {
-    openingMessage: "Hi! I can draft social media posts for you. What's your niche or topic today?",
+    openingMessage: "Give me your brand or topic and I'll generate 30 days of platform-optimised posts right now.",
     apiEndpoint: "/api/chat",
   },
   seo: {

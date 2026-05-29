@@ -84,7 +84,7 @@ export default function ChatBot() {
     background: '#07030f', border: `1px solid ${ACCENT}44`,
     boxShadow: '0 8px 40px rgba(0,0,0,0.8)',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
-    animation: 'db-slide 0.2s ease-out',
+    animation: 'db-slide 0.22s cubic-bezier(0.23,1,0.32,1)',
   }
 
   if (!shown) return null
@@ -94,7 +94,9 @@ export default function ChatBot() {
       <button onClick={() => setOpen(o => !o)} aria-label="DraftBot"
         style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 9999, width: 52, height: 52, borderRadius: 12, background: `linear-gradient(135deg, ${ACCENT}, #8b5cf6)`, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 20px ${ACCENT}55`, transition: 'transform 0.2s' }}
         onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.08)')}
-        onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}>
+        onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+        onMouseDown={e => (e.currentTarget.style.transform = 'scale(0.97)')}
+        onMouseUp={e => (e.currentTarget.style.transform = 'scale(1.08)')}>
         {open ? (
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         ) : (
@@ -104,7 +106,7 @@ export default function ChatBot() {
 
       {open && (
         <div style={panelStyle}>
-          <style>{`@keyframes db-slide{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}} @keyframes db-slide-bottom{from{transform:translateY(100%)}to{transform:translateY(0)}} .db-msg::-webkit-scrollbar{width:4px} .db-msg::-webkit-scrollbar-thumb{background:${ACCENT}44;border-radius:2px} @keyframes db-bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}`}</style>
+          <style>{`@keyframes db-slide{from{opacity:0;transform:translateY(14px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}} @keyframes db-slide-bottom{from{transform:translateY(100%)}to{transform:translateY(0)}} .db-msg::-webkit-scrollbar{width:4px} .db-msg::-webkit-scrollbar-thumb{background:${ACCENT}44;border-radius:2px} @keyframes db-bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}`}</style>
           <div style={{ padding: '12px 16px', borderBottom: `1px solid ${ACCENT}30`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: `${ACCENT}10`, flexShrink: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ width: 34, height: 34, borderRadius: 8, background: `linear-gradient(135deg, ${ACCENT}, #8b5cf6)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>✦</div>
