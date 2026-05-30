@@ -1,8 +1,8 @@
 // site.config.ts — Single source of truth for DraftCal brand content
 export const siteConfig = {
   name: "DraftCal",
-  tagline: "One prompt. 30 days of content.",
-  description: "AI writes platform-optimised posts for every channel — ready to schedule in under 5 minutes.",
+  tagline: "Draft a week of posts in 5 minutes — scheduled, platform-ready, no $200/mo tool needed.",
+  description: "AI writes platform-optimized posts for LinkedIn, X, and Instagram from a single brief. No Buffer, no Hootsuite, no $200/mo.",
   url: "https://draftcal.app",
   primaryColor: "#7c3aed",
   accentColor: "#ec4899",
@@ -14,8 +14,8 @@ export const siteConfig = {
     apiEndpoint: "/api/chat",
   },
   seo: {
-    title: "DraftCal — AI Social Media Calendar & Content Planner",
-    description: "Generate and schedule social content with AI. Instagram, Twitter, LinkedIn, TikTok — all from one calendar.",
+    title: "DraftCal — AI Social Media Calendar | Schedule a Week in 5 Minutes",
+    description: "AI social media calendar that drafts a week of posts for LinkedIn, X, and Instagram in minutes. Free alternative to Buffer and Hootsuite.",
   },
   features: [
     { icon: "📅", title: "30 days of posts in 30 seconds", desc: "Drop your brand, pick platforms, hit generate. AI fills your entire content calendar instantly." },
