@@ -7,7 +7,8 @@ import type { ContentOverrides } from '@/lib/content'
 
 // ── Platform config ──────────────────────────────────────────────────────────
 const PLATFORMS = ["Twitter/X", "LinkedIn", "Instagram", "Facebook", "TikTok"];
-const TONES = ["Professional", "Casual", "Humorous", "Inspirational", "Educational"];
+const TONE_DIAL = ["Professional", "Balanced", "Casual"] as const;
+type ToneDial = typeof TONE_DIAL[number];
 
 const PLATFORM_META: Record<string, { color: string; bg: string; border: string; icon: string; short: string }> = {
   "Twitter/X":  { color: "#38bdf8", bg: "rgba(56,189,248,0.12)",  border: "rgba(56,189,248,0.3)",  icon: "𝕏",  short: "X" },
@@ -147,24 +148,81 @@ function ProModal({ onClose, onCheckout, loading }: { onClose: () => void; onChe
   );
 }
 
+// ── Platform toggle tabs ───────────────────────────────────────────────────────
+const PREVIEW_PLATFORMS = ["LinkedIn", "X/Twitter", "Instagram"] as const;
+type PreviewPlatform = typeof PREVIEW_PLATFORMS[number];
+
+const PREVIEW_META: Record<PreviewPlatform, { key: string; charLimit: number; hashtagStyle: string; lineBreaks: boolean; tip: string }> = {
+  "LinkedIn":  { key: "LinkedIn",  charLimit: 3000, hashtagStyle: "inline", lineBreaks: true,  tip: "Add 3–5 industry hashtags at the end. Double line breaks improve readability." },
+  "X/Twitter": { key: "Twitter/X", charLimit: 280,  hashtagStyle: "inline", lineBreaks: false, tip: "Keep under 280 chars. 1–2 hashtags max. Short sentences win." },
+  "Instagram": { key: "Instagram", charLimit: 2200, hashtagStyle: "block",  lineBreaks: true,  tip: "Put hashtags after a line break. Use 10–20 targeted tags for reach." },
+};
+
+function formatForPlatform(content: string, hashtags: string[], platform: PreviewPlatform): string {
+  const meta = PREVIEW_META[platform];
+  if (platform === "X/Twitter") {
+    const tags = hashtags.slice(0, 2).map(h => `#${h}`).join(' ');
+    const base = content.length + (tags ? tags.length + 1 : 0) <= 280
+      ? `${content}${tags ? ' ' + tags : ''}`
+      : content.slice(0, 277 - (tags ? tags.length + 1 : 0)) + '…' + (tags ? ' ' + tags : '');
+    return base;
+  }
+  if (platform === "Instagram") {
+    const tags = hashtags.map(h => `#${h}`).join(' ');
+    return `${content}\n.\n.\n.\n${tags}`;
+  }
+  // LinkedIn
+  const tags = hashtags.slice(0, 5).map(h => `#${h}`).join(' ');
+  return `${content}\n\n${tags}`;
+}
+
 // ── Post card ─────────────────────────────────────────────────────────────────
 function PostCard({ post, index, showAnalytics, onSchedule }: { post: PostIdea; index: number; showAnalytics: boolean; onSchedule: () => void }) {
   const [expanded, setExpanded] = useState(false);
-  const fullText = post.content + (post.hashtags?.length ? '\n' + post.hashtags.map(h => `#${h}`).join(' ') : '');
-  const meta = PLATFORM_META[post.platform];
-  const charLimit = CHAR_LIMITS[post.platform];
-  const charPct = charLimit ? Math.min(100, Math.round((post.content.length / charLimit) * 100)) : null;
-  const charOver = charLimit ? post.content.length > charLimit : false;
+  const [previewPlatform, setPreviewPlatform] = useState<PreviewPlatform>("LinkedIn");
+
+  const previewMeta = PREVIEW_META[previewPlatform];
+  const formattedContent = formatForPlatform(post.content, post.hashtags || [], previewPlatform);
+  const charLimit = previewMeta.charLimit;
+  const charCount = formattedContent.length;
+  const charPct = Math.min(100, Math.round((charCount / charLimit) * 100));
+  const charOver = charCount > charLimit;
+
+  const nativeMeta = PLATFORM_META[post.platform];
+  const fullText = formattedContent;
 
   return (
     <div className="card-hover rounded-xl border flex flex-col"
       style={{ borderColor: 'rgba(34,197,94,0.1)', background: 'rgba(255,255,255,0.025)' }}>
-      <div className="p-4 pb-3 flex items-center justify-between">
-        <span className="text-[10px] px-2 py-0.5 rounded-full border font-semibold"
-          style={{ color: meta?.color, background: meta?.bg, borderColor: meta?.border }}>
-          {meta?.icon} {post.platform}
-        </span>
+
+      {/* Platform toggle tabs */}
+      <div className="px-4 pt-3 pb-0 flex items-center justify-between gap-2">
+        <div className="flex gap-1">
+          {PREVIEW_PLATFORMS.map(p => {
+            const isActive = previewPlatform === p;
+            const tabMeta = PLATFORM_META[PREVIEW_META[p].key];
+            return (
+              <button key={p} onClick={() => setPreviewPlatform(p)}
+                className="btn-press text-[10px] px-2 py-1 rounded-lg border transition-all font-semibold"
+                style={{
+                  color: isActive ? (tabMeta?.color ?? '#86efac') : 'rgba(255,255,255,0.3)',
+                  background: isActive ? (tabMeta?.bg ?? 'rgba(34,197,94,0.1)') : 'transparent',
+                  borderColor: isActive ? (tabMeta?.border ?? 'rgba(34,197,94,0.3)') : 'rgba(255,255,255,0.06)',
+                }}>
+                {p}
+              </button>
+            );
+          })}
+        </div>
         <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>{post.date} · {post.time}</span>
+      </div>
+
+      {/* Native platform badge */}
+      <div className="px-4 pt-2 pb-1">
+        <span className="text-[9px] px-1.5 py-0.5 rounded-full border font-semibold"
+          style={{ color: nativeMeta?.color, background: nativeMeta?.bg, borderColor: nativeMeta?.border }}>
+          {nativeMeta?.icon} generated for {post.platform}
+        </span>
       </div>
 
       {post.hook && (
@@ -174,11 +232,11 @@ function PostCard({ post, index, showAnalytics, onSchedule }: { post: PostIdea; 
       )}
 
       <div className="px-4 pb-3 flex-1">
-        <p className={`text-xs leading-relaxed ${!expanded ? 'line-clamp-3' : ''}`}
+        <p className={`text-xs leading-relaxed whitespace-pre-line ${!expanded ? 'line-clamp-4' : ''}`}
           style={{ color: 'rgba(255,255,255,0.6)' }}>
-          {post.content}
+          {formattedContent}
         </p>
-        {post.content.length > 160 && (
+        {formattedContent.length > 200 && (
           <button onClick={() => setExpanded(e => !e)}
             className="text-[10px] mt-1 transition-colors"
             style={{ color: 'rgba(34,197,94,0.7)' }}>
@@ -187,16 +245,14 @@ function PostCard({ post, index, showAnalytics, onSchedule }: { post: PostIdea; 
         )}
       </div>
 
-      {post.hashtags?.length > 0 && (
-        <div className="px-4 pb-3 flex flex-wrap gap-1">
-          {post.hashtags.slice(0, 4).map((h, i) => (
-            <span key={i} className="text-[10px] px-1.5 py-0.5 rounded-full"
-              style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', color: 'rgba(134,239,172,0.8)' }}>
-              #{h}
-            </span>
-          ))}
-        </div>
-      )}
+      {/* Platform tip */}
+      <div className="mx-4 mb-3 px-3 py-2 rounded-lg"
+        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+        <p className="text-[10px] leading-snug" style={{ color: 'rgba(255,255,255,0.4)' }}>
+          <span className="font-semibold" style={{ color: 'rgba(255,255,255,0.6)' }}>{previewPlatform}: </span>
+          {previewMeta.tip}
+        </p>
+      </div>
 
       {post.engagement_tip && (
         <div className="mx-4 mb-3 px-3 py-2 rounded-lg"
@@ -207,17 +263,16 @@ function PostCard({ post, index, showAnalytics, onSchedule }: { post: PostIdea; 
         </div>
       )}
 
-      {charLimit && charPct !== null && (
-        <div className="px-4 pb-2 flex items-center gap-2">
-          <div className="flex-1 h-0.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
-            <div className="h-full rounded-full transition-all"
-              style={{ width: `${charPct}%`, background: charOver ? '#ef4444' : charPct > 80 ? '#fbbf24' : 'rgba(34,197,94,0.6)' }} />
-          </div>
-          <span className="text-[10px] font-mono" style={{ color: charOver ? '#f87171' : 'rgba(255,255,255,0.2)' }}>
-            {post.content.length}/{charLimit}
-          </span>
+      {/* Char count bar */}
+      <div className="px-4 pb-2 flex items-center gap-2">
+        <div className="flex-1 h-0.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
+          <div className="h-full rounded-full transition-all"
+            style={{ width: `${charPct}%`, background: charOver ? '#ef4444' : charPct > 80 ? '#fbbf24' : 'rgba(34,197,94,0.6)' }} />
         </div>
-      )}
+        <span className="text-[10px] font-mono" style={{ color: charOver ? '#f87171' : 'rgba(255,255,255,0.2)' }}>
+          {charCount}/{charLimit}
+        </span>
+      </div>
 
       <div className="px-4 pb-4 pt-1 border-t flex items-center gap-2 flex-wrap"
         style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
@@ -275,7 +330,7 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
   const [topic, setTopic] = useState("");
   const [heroNiche, setHeroNiche] = useState("");
   const [platforms, setPlatforms] = useState<string[]>(["Twitter/X", "LinkedIn", "Instagram"]);
-  const [tone, setTone] = useState("Casual");
+  const [tone, setTone] = useState<ToneDial>("Balanced");
   const [weeks, setWeeks] = useState(2);
   const [posts, setPosts] = useState<PostIdea[]>([]);
   const [loading, setLoading] = useState(false);
@@ -290,6 +345,8 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
 
   useEffect(() => {
     if (localStorage.getItem('draftcal-pro') === '1') setIsPro(true);
+    const savedTone = localStorage.getItem('draftcal_tone') as ToneDial | null;
+    if (savedTone && TONE_DIAL.includes(savedTone)) setTone(savedTone);
     const params = new URLSearchParams(window.location.search);
     if (params.get('upgraded') === '1') {
       setIsPro(true);
@@ -309,6 +366,11 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
 
   const togglePlatform = (p: string) =>
     setPlatforms(prev => prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p]);
+
+  const handleToneChange = useCallback((t: ToneDial) => {
+    setTone(t);
+    localStorage.setItem('draftcal_tone', t);
+  }, []);
 
   async function generate(overrideTopic?: string) {
     const t = overrideTopic ?? topic;
@@ -378,8 +440,8 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
 
   const types = posts.length > 0 ? [...new Set(posts.map(p => p.type))] : [];
 
-  const headline = overrides.headline ?? 'Content ideas';
-  const subheadline = overrides.subheadline ?? '30 days of AI-generated posts for every platform — hooks, hashtags, and engagement tips — in under 5 minutes.';
+  const headline = overrides.headline ?? 'Draft a week of posts in 5 minutes — scheduled, platform-ready, no $200/mo tool needed.';
+  const subheadline = overrides.subheadline ?? 'AI writes platform-optimized posts for LinkedIn, X, and Instagram from a single brief.';
   const ctaLabel = overrides.cta ?? 'Generate →';
 
   return (
@@ -439,13 +501,13 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
             {/* LEFT — headline + niche input */}
             <div className="flex flex-col gap-6">
               <div>
-                <h1 className="font-black leading-[1.05] tracking-tight mb-4 fade-up delay-100"
-                  style={{ fontSize: 'clamp(2rem, 5vw, 3.8rem)' }}>
-                  <span style={{ color: 'rgba(255,255,255,0.95)' }}>{headline}</span>
-                  <br />
+                <h1 className="font-black leading-[1.08] tracking-tight mb-4 fade-up delay-100"
+                  style={{ fontSize: 'clamp(1.7rem, 4vw, 3.2rem)' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.95)' }}>Draft a week of posts </span>
                   <span style={{ background: 'linear-gradient(135deg, #22c55e 0%, #4ade80 60%, #86efac 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                    on autopilot
+                    in 5 minutes
                   </span>
+                  <span style={{ color: 'rgba(255,255,255,0.95)' }}> — scheduled, platform-ready, no $200/mo tool needed.</span>
                 </h1>
                 <p className="text-base leading-relaxed fade-up delay-200"
                   style={{ color: 'rgba(255,255,255,0.5)', maxWidth: 460 }}>
@@ -717,14 +779,15 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
                   <div>
                     <label className="text-xs uppercase tracking-wider mb-2 block"
                       style={{ color: 'rgba(255,255,255,0.4)' }}>Tone</label>
-                    <div className="flex flex-wrap gap-2">
-                      {TONES.map(t => (
-                        <button key={t} onClick={() => setTone(t)}
-                          className="btn-press px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                    <div className="flex rounded-lg overflow-hidden border"
+                      style={{ borderColor: 'rgba(34,197,94,0.2)' }}>
+                      {TONE_DIAL.map((t, i) => (
+                        <button key={t} onClick={() => handleToneChange(t)}
+                          className="btn-press flex-1 py-2 text-xs font-semibold transition-all"
                           style={{
-                            color: tone === t ? '#86efac' : 'rgba(255,255,255,0.45)',
-                            background: tone === t ? 'rgba(34,197,94,0.12)' : 'rgba(255,255,255,0.03)',
-                            border: `1px solid ${tone === t ? 'rgba(34,197,94,0.35)' : 'rgba(255,255,255,0.08)'}`,
+                            color: tone === t ? '#fff' : 'rgba(255,255,255,0.45)',
+                            background: tone === t ? 'rgba(34,197,94,0.25)' : 'rgba(255,255,255,0.02)',
+                            borderRight: i < TONE_DIAL.length - 1 ? '1px solid rgba(34,197,94,0.15)' : 'none',
                           }}>
                           {t}
                         </button>
