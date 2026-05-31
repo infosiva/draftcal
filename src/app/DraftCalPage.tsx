@@ -502,7 +502,7 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
             <div className="flex flex-col gap-6">
               <div>
                 <h1 className="font-black leading-[1.08] tracking-tight mb-4 fade-up delay-100"
-                  style={{ fontSize: 'clamp(1.7rem, 4vw, 3.2rem)' }}>
+                  style={{ fontSize: 'clamp(1.2rem, 2.8vw, 2rem)' }}>
                   <span style={{ color: 'rgba(255,255,255,0.95)' }}>Draft a week of posts </span>
                   <span style={{ background: 'linear-gradient(135deg, #22c55e 0%, #4ade80 60%, #86efac 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                     in 5 minutes
