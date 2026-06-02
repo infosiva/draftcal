@@ -1,4 +1,4 @@
-// File: /Users/sivaprakasam/projects/agents/social-media-calendar/src/app/api/stripe/checkout/route.ts
+// File: /Users/sivaprakasam/projects/agents/draftcal/src/app/api/stripe/checkout/route.ts
 import * as entry from '../../../../../../src/app/api/stripe/checkout/route.js'
 import type { NextRequest } from 'next/server.js'
 

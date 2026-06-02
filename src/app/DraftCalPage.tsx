@@ -488,9 +488,15 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
 
           {/* Badge */}
           <div className="flex justify-center mb-6 fade-up">
-            <span className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-1.5 rounded-full border"
-              style={{ background: 'rgba(34,197,94,0.08)', borderColor: 'rgba(34,197,94,0.25)', color: '#86efac' }}>
-              <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#22c55e' }} />
+            <span
+              className="inline-flex items-center gap-2 text-[11px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest"
+              style={{
+                background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
+                border: '1px solid rgba(255,255,255,0.09)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)',
+                color: 'rgba(134,239,172,0.82)',
+              }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#22c55e', flexShrink: 0 }} />
               Free to generate · No account needed
             </span>
           </div>
@@ -501,10 +507,10 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
             {/* LEFT — headline + niche input */}
             <div className="flex flex-col gap-6">
               <div>
-                <h1 className="font-black leading-[1.08] tracking-tight mb-4 fade-up delay-100"
-                  style={{ fontSize: 'clamp(1.2rem, 2.8vw, 2rem)' }}>
+                <h1 className="font-black tracking-tight mb-4 fade-up delay-100"
+                  style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.75rem)', lineHeight: 0.97 }}>
                   <span style={{ color: 'rgba(255,255,255,0.95)' }}>Draft a week of posts </span>
-                  <span style={{ background: 'linear-gradient(135deg, #22c55e 0%, #4ade80 60%, #86efac 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                  <span style={{ background: 'linear-gradient(135deg, #22c55e 0%, #4ade80 55%, #bbf7d0 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: 'drop-shadow(0 0 28px rgba(34,197,94,0.45))' }}>
                     in 5 minutes
                   </span>
                   <span style={{ color: 'rgba(255,255,255,0.95)' }}> — scheduled, platform-ready, no $200/mo tool needed.</span>

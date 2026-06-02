@@ -1,4 +1,4 @@
-// File: /Users/sivaprakasam/projects/agents/social-media-calendar/src/app/api/generate-calendar/route.ts
+// File: /Users/sivaprakasam/projects/agents/draftcal/src/app/api/generate-calendar/route.ts
 import * as entry from '../../../../../src/app/api/generate-calendar/route.js'
 import type { NextRequest } from 'next/server.js'
 

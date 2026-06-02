@@ -96,7 +96,7 @@
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "/Users/sivaprakasam/projects/agents/social-media-calendar",
+    "outputFileTracingRoot": "/Users/sivaprakasam/projects/agents/draftcal",
     "experimental": {
       "nodeMiddleware": false,
       "cacheLife": {
@@ -279,7 +279,7 @@
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.ts",
     "turbopack": {
-      "root": "/Users/sivaprakasam/projects/agents/social-media-calendar"
+      "root": "/Users/sivaprakasam/projects/agents/draftcal"
     },
     "_originalRewrites": {
       "beforeFiles": [],
@@ -304,7 +304,7 @@
       "fallback": []
     }
   },
-  "appDir": "/Users/sivaprakasam/projects/agents/social-media-calendar",
+  "appDir": "/Users/sivaprakasam/projects/agents/draftcal",
   "relativeAppDir": "",
   "files": [
     ".next/routes-manifest.json",

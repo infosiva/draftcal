@@ -1,12 +1,13 @@
 {
-  "/api/generate-calendar/route": "/api/generate-calendar",
   "/api/stripe/checkout/route": "/api/stripe/checkout",
   "/sitemap.xml/route": "/sitemap.xml",
+  "/api/generate-calendar/route": "/api/generate-calendar",
   "/api/chat/route": "/api/chat",
   "/_not-found/page": "/_not-found",
-  "/contact/page": "/contact",
   "/page": "/",
-  "/about/page": "/about",
+  "/contact/page": "/contact",
+  "/terms/page": "/terms",
   "/privacy/page": "/privacy",
-  "/terms/page": "/terms"
+  "/about/page": "/about",
+  "/api/stats/route": "/api/stats"
 }

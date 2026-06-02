@@ -1,4 +1,4 @@
-// File: /Users/sivaprakasam/projects/agents/social-media-calendar/src/app/api/chat/route.ts
+// File: /Users/sivaprakasam/projects/agents/draftcal/src/app/api/chat/route.ts
 import * as entry from '../../../../../src/app/api/chat/route.js'
 import type { NextRequest } from 'next/server.js'
 
