@@ -102,9 +102,9 @@ function CopyButton({ text }: { text: string }) {
     <button onClick={copy}
       className="btn-press text-xs px-2.5 py-1 rounded-lg border transition-all"
       style={{
-        borderColor: copied ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.1)',
-        background: copied ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.04)',
-        color: copied ? '#86efac' : 'rgba(255,255,255,0.4)',
+        borderColor: copied ? '#fed7aa' : '#e2e8f0',
+        background: copied ? '#fff7ed' : '#f8fafc',
+        color: copied ? '#c2410c' : '#64748b',
       }}>
       {copied ? '✓ Copied' : 'Copy'}
     </button>
@@ -193,7 +193,7 @@ function PostCard({ post, index, showAnalytics, onSchedule }: { post: PostIdea; 
 
   return (
     <div className="card-hover rounded-xl border flex flex-col"
-      style={{ borderColor: 'rgba(34,197,94,0.1)', background: 'rgba(255,255,255,0.025)' }}>
+      style={{ borderColor: '#e2e8f0', background: '#ffffff' }}>
 
       {/* Platform toggle tabs */}
       <div className="px-4 pt-3 pb-0 flex items-center justify-between gap-2">
@@ -214,7 +214,7 @@ function PostCard({ post, index, showAnalytics, onSchedule }: { post: PostIdea; 
             );
           })}
         </div>
-        <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>{post.date} · {post.time}</span>
+        <span className="text-[10px]" style={{ color: '#94a3b8' }}>{post.date} · {post.time}</span>
       </div>
 
       {/* Native platform badge */}
@@ -227,19 +227,19 @@ function PostCard({ post, index, showAnalytics, onSchedule }: { post: PostIdea; 
 
       {post.hook && (
         <div className="px-4 pb-2">
-          <p className="text-xs font-semibold leading-snug" style={{ color: 'rgba(255,255,255,0.9)' }}>&ldquo;{post.hook}&rdquo;</p>
+          <p className="text-xs font-semibold leading-snug" style={{ color: '#111111' }}>&ldquo;{post.hook}&rdquo;</p>
         </div>
       )}
 
       <div className="px-4 pb-3 flex-1">
         <p className={`text-xs leading-relaxed whitespace-pre-line ${!expanded ? 'line-clamp-4' : ''}`}
-          style={{ color: 'rgba(255,255,255,0.6)' }}>
+          style={{ color: '#374151' }}>
           {formattedContent}
         </p>
         {formattedContent.length > 200 && (
           <button onClick={() => setExpanded(e => !e)}
             className="text-[10px] mt-1 transition-colors"
-            style={{ color: 'rgba(34,197,94,0.7)' }}>
+            style={{ color: '#f97316' }}>
             {expanded ? 'Show less' : 'Show more'}
           </button>
         )}
@@ -247,17 +247,17 @@ function PostCard({ post, index, showAnalytics, onSchedule }: { post: PostIdea; 
 
       {/* Platform tip */}
       <div className="mx-4 mb-3 px-3 py-2 rounded-lg"
-        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
-        <p className="text-[10px] leading-snug" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          <span className="font-semibold" style={{ color: 'rgba(255,255,255,0.6)' }}>{previewPlatform}: </span>
+        style={{ background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+        <p className="text-[10px] leading-snug" style={{ color: '#64748b' }}>
+          <span className="font-semibold" style={{ color: '#374151' }}>{previewPlatform}: </span>
           {previewMeta.tip}
         </p>
       </div>
 
       {post.engagement_tip && (
         <div className="mx-4 mb-3 px-3 py-2 rounded-lg"
-          style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.15)' }}>
-          <p className="text-[10px] leading-snug" style={{ color: 'rgba(134,239,172,0.8)' }}>
+          style={{ background: '#fff7ed', border: '1px solid #fed7aa' }}>
+          <p className="text-[10px] leading-snug" style={{ color: '#c2410c' }}>
             <span className="font-semibold">Tip: </span>{post.engagement_tip}
           </p>
         </div>
@@ -265,22 +265,22 @@ function PostCard({ post, index, showAnalytics, onSchedule }: { post: PostIdea; 
 
       {/* Char count bar */}
       <div className="px-4 pb-2 flex items-center gap-2">
-        <div className="flex-1 h-0.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
+        <div className="flex-1 h-0.5 rounded-full overflow-hidden" style={{ background: '#e2e8f0' }}>
           <div className="h-full rounded-full transition-all"
-            style={{ width: `${charPct}%`, background: charOver ? '#ef4444' : charPct > 80 ? '#fbbf24' : 'rgba(34,197,94,0.6)' }} />
+            style={{ width: `${charPct}%`, background: charOver ? '#ef4444' : charPct > 80 ? '#f59e0b' : '#f97316' }} />
         </div>
-        <span className="text-[10px] font-mono" style={{ color: charOver ? '#f87171' : 'rgba(255,255,255,0.2)' }}>
+        <span className="text-[10px] font-mono" style={{ color: charOver ? '#dc2626' : '#94a3b8' }}>
           {charCount}/{charLimit}
         </span>
       </div>
 
       <div className="px-4 pb-4 pt-1 border-t flex items-center gap-2 flex-wrap"
-        style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
-        <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.25)' }}>{TYPE_LABELS[post.type] || post.type}</span>
+        style={{ borderColor: '#f1f5f9' }}>
+        <span className="text-[10px]" style={{ color: '#94a3b8' }}>{TYPE_LABELS[post.type] || post.type}</span>
         <div className="ml-auto flex gap-1.5">
           <button onClick={onSchedule}
             className="btn-press text-xs px-2.5 py-1 rounded-lg border transition-all"
-            style={{ borderColor: 'rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.35)' }}>
+            style={{ borderColor: '#e2e8f0', background: '#f8fafc', color: '#64748b' }}>
             Schedule (Pro)
           </button>
           <CopyButton text={fullText} />
@@ -290,32 +290,64 @@ function PostCard({ post, index, showAnalytics, onSchedule }: { post: PostIdea; 
   );
 }
 
-// ── Hero calendar grid cell ───────────────────────────────────────────────────
-function CalCell({ day, post }: { day: number; post?: typeof HERO_CALENDAR_POSTS[0] }) {
-  const meta = post ? PLATFORM_META[post.platform] : null;
-  const isToday = day === 12;
+// ── June 2026 calendar data (editorial hero) ──────────────────────────────────
+const JUNE_PILLS: Record<number, { label: string; bg: string; color: string }> = {
+  9:  { label: 'Instagram Reel', bg: '#fce7f3', color: '#be185d' },
+  11: { label: 'Twitter Thread', bg: '#dbeafe', color: '#1d4ed8' },
+  13: { label: 'LinkedIn Post',  bg: '#e0e7ff', color: '#3730a3' },
+  16: { label: 'TikTok',         bg: '#111111', color: '#ffffff' },
+  23: { label: 'Facebook Post',  bg: '#dcfce7', color: '#15803d' },
+};
+const JUNE_AI_CELL = 20; // cell that shows "AI generating..."
+// June 2026 starts on Monday (weekday index 0 = Mon)
+const JUNE_START_DOW = 0; // Monday
+const JUNE_DAYS = 30;
+
+// ── Editorial calendar cell ───────────────────────────────────────────────────
+function EditorialCalCell({ day, animIdx }: { day: number | null; animIdx: number }) {
+  const pill = day ? JUNE_PILLS[day] : null;
+  const isAI = day === JUNE_AI_CELL;
+  const isToday = day === 4; // June 4 = "today"
+
+  if (!day) {
+    return <div className="rounded-lg min-h-[52px]" style={{ background: '#f1f5f9' }} />;
+  }
 
   return (
-    <div className="rounded-lg p-1.5 flex flex-col gap-1 min-h-[56px] transition-all"
+    <div
+      className="rounded-lg p-1.5 flex flex-col gap-1 min-h-[52px] transition-all"
       style={{
-        background: isToday ? 'rgba(34,197,94,0.12)' : post ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.015)',
-        border: `1px solid ${isToday ? 'rgba(34,197,94,0.4)' : post ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.04)'}`,
-      }}>
-      <span className="text-[10px] font-semibold leading-none"
-        style={{ color: isToday ? '#86efac' : post ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.25)' }}>
+        background: isToday ? '#fff7ed' : '#ffffff',
+        border: `1px solid ${isToday ? '#f97316' : '#e2e8f0'}`,
+        animationDelay: `${animIdx * 30}ms`,
+        animation: 'calCellIn 0.35s cubic-bezier(0.23,1,0.32,1) both',
+      }}
+    >
+      <span
+        className="text-[10px] font-bold leading-none"
+        style={{ color: isToday ? '#f97316' : '#64748b' }}
+      >
         {day}
       </span>
-      {post && meta && (
-        <>
-          <span className="text-[9px] leading-tight line-clamp-2"
-            style={{ color: 'rgba(255,255,255,0.5)' }}>
-            {post.snippet.length > 40 ? post.snippet.slice(0, 40) + '…' : post.snippet}
-          </span>
-          <span className="text-[8px] px-1 py-0.5 rounded-full self-start font-semibold"
-            style={{ color: meta.color, background: meta.bg, border: `1px solid ${meta.border}` }}>
-            {meta.short}
-          </span>
-        </>
+      {isAI && (
+        <span
+          className="text-[8px] px-1.5 py-0.5 rounded-full font-semibold self-start"
+          style={{ background: '#fff7ed', color: '#f97316', border: '1px solid #fed7aa', animation: 'pulse 1.5s ease-in-out infinite' }}
+        >
+          ✨ AI…
+        </span>
+      )}
+      {pill && !isAI && (
+        <span
+          className="text-[8px] px-1.5 py-0.5 rounded-full font-semibold self-start leading-tight"
+          style={{
+            background: pill.bg,
+            color: pill.color,
+            animation: `pillPop 0.4s cubic-bezier(0.23,1,0.32,1) ${animIdx * 30 + 80}ms both`,
+          }}
+        >
+          {pill.label}
+        </span>
       )}
     </div>
   );
@@ -470,211 +502,320 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
         </div>
       )}
 
-      <div className="min-h-screen text-white relative overflow-x-hidden"
-        style={{ background: '#040d06' }}>
+      <style>{`
+        @keyframes calCellIn {
+          from { opacity: 0; transform: scale(0.95) translateY(4px); }
+          to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes pillPop {
+          from { opacity: 0; transform: scale(0.8); }
+          to   { opacity: 1; transform: scale(1); }
+        }
+        .hero-editorial {
+          background: #fafafa;
+          background-image: radial-gradient(ellipse 60% 50% at 100% 0%, rgba(249,115,22,0.07) 0%, transparent 70%);
+        }
+        .hero-btn-orange {
+          background: #f97316;
+          color: #fff;
+          transition: background 150ms, transform 150ms;
+        }
+        .hero-btn-orange:hover { background: #ea6c0a; }
+        .hero-btn-orange:active { transform: scale(0.97); }
+        .hero-btn-ghost {
+          background: transparent;
+          border: 1.5px solid #e2e8f0;
+          color: #374151;
+          transition: border-color 150ms, background 150ms, transform 150ms;
+        }
+        .hero-btn-ghost:hover { border-color: #f97316; background: #fff7ed; color: #f97316; }
+        .hero-btn-ghost:active { transform: scale(0.97); }
+        .hero-input:focus {
+          outline: none;
+          border-color: #f97316 !important;
+          box-shadow: 0 0 0 3px rgba(249,115,22,0.12);
+        }
+        .platform-icon {
+          width: 28px; height: 28px;
+          border-radius: 7px;
+          display: flex; align-items: center; justify-content: center;
+          font-size: 13px; font-weight: 800;
+        }
+      `}</style>
 
-        {/* Emerald glow bg blobs */}
-        <div className="fixed inset-0 pointer-events-none" aria-hidden="true" style={{ zIndex: 0 }}>
-          <div className="absolute rounded-full blur-3xl opacity-20"
-            style={{ width: 600, height: 400, top: '-100px', left: '-100px', background: 'radial-gradient(ellipse, #16a34a 0%, transparent 70%)' }} />
-          <div className="absolute rounded-full blur-3xl opacity-10"
-            style={{ width: 500, height: 500, top: '40%', right: '-150px', background: 'radial-gradient(ellipse, #22c55e 0%, transparent 70%)' }} />
-          <div className="absolute rounded-full blur-3xl opacity-8"
-            style={{ width: 400, height: 300, bottom: '20%', left: '30%', background: 'radial-gradient(ellipse, #4ade80 0%, transparent 70%)' }} />
-        </div>
+      <div className="min-h-screen relative overflow-x-hidden" style={{ background: '#fafafa' }}>
+
+        {/* Subtle orange radial in top-right corner only */}
+        <div
+          className="fixed pointer-events-none"
+          aria-hidden="true"
+          style={{
+            zIndex: 0,
+            top: 0, right: 0,
+            width: 700, height: 500,
+            background: 'radial-gradient(ellipse 60% 55% at 100% 0%, rgba(249,115,22,0.09) 0%, transparent 70%)',
+          }}
+        />
 
         {/* ── HERO ──────────────────────────────────────────────────────── */}
-        <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-6">
+        <section className="hero-editorial relative z-10 pt-20 pb-12 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto">
 
-          {/* Badge */}
-          <div className="flex justify-center mb-6 fade-up">
-            <span
-              className="inline-flex items-center gap-2 text-[11px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest"
-              style={{
-                background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
-                border: '1px solid rgba(255,255,255,0.09)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)',
-                color: 'rgba(134,239,172,0.82)',
-              }}
-            >
-              <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#22c55e', flexShrink: 0 }} />
-              Free to generate · No account needed
-            </span>
-          </div>
+            {/* Badge */}
+            <div className="flex justify-start mb-6">
+              <span
+                className="inline-flex items-center gap-2 text-[11px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest"
+                style={{ background: '#fff7ed', border: '1.5px solid #fed7aa', color: '#c2410c' }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full animate-pulse flex-shrink-0" style={{ background: '#f97316' }} />
+                10,000+ creators use DraftCal
+              </span>
+            </div>
 
-          {/* Split layout: headline left, calendar right (desktop) */}
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+            {/* Split layout */}
+            <div className="grid lg:grid-cols-2 gap-10 lg:gap-20 items-start">
 
-            {/* LEFT — headline + niche input */}
-            <div className="flex flex-col gap-6">
-              <div>
-                <h1 className="font-black tracking-tight mb-4 fade-up delay-100"
-                  style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.75rem)', lineHeight: 0.97 }}>
-                  <span style={{ color: 'rgba(255,255,255,0.95)' }}>Draft a week of posts </span>
-                  <span style={{ background: 'linear-gradient(135deg, #22c55e 0%, #4ade80 55%, #bbf7d0 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: 'drop-shadow(0 0 28px rgba(34,197,94,0.45))' }}>
-                    in 5 minutes
-                  </span>
-                  <span style={{ color: 'rgba(255,255,255,0.95)' }}> — scheduled, platform-ready, no $200/mo tool needed.</span>
-                </h1>
-                <p className="text-base leading-relaxed fade-up delay-200"
-                  style={{ color: 'rgba(255,255,255,0.5)', maxWidth: 460 }}>
-                  {subheadline}
-                </p>
-              </div>
+              {/* LEFT panel */}
+              <div className="flex flex-col gap-7">
 
-              {/* NICHE INPUT — the hero CTA */}
-              <div className="fade-up delay-300">
-                <p className="text-xs font-semibold uppercase tracking-wider mb-2"
-                  style={{ color: 'rgba(134,239,172,0.7)' }}>
-                  What&apos;s your niche?
-                </p>
-                <div className="flex gap-2">
+                {/* Headline */}
+                <div>
+                  <h1
+                    className="font-black tracking-tight leading-none mb-4"
+                    style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)', lineHeight: 1.0, color: '#111111' }}
+                  >
+                    Generate{' '}
+                    <span style={{ color: '#f97316' }}>30 days</span>
+                    {' '}of social content in{' '}
+                    <span style={{ color: '#f97316' }}>30 seconds</span>
+                    {' '}with AI
+                  </h1>
+                  <p
+                    className="text-base leading-relaxed"
+                    style={{ color: '#64748b', maxWidth: 480, fontSize: '1.0625rem' }}
+                  >
+                    Drop your brand. Pick your platforms. Watch AI fill your entire content calendar
+                    with scroll-stopping posts — hooks, hashtags, engagement tips included.
+                  </p>
+                </div>
+
+                {/* Platform checkboxes */}
+                <div className="flex flex-col gap-3">
+                  <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#94a3b8' }}>
+                    Pick your platforms
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { label: 'Instagram', checked: true,  bg: '#fce7f3', color: '#be185d', icon: '◉' },
+                      { label: 'TikTok',    checked: true,  bg: '#f0fdf4', color: '#15803d', icon: '♪' },
+                      { label: 'Twitter/X', checked: true,  bg: '#eff6ff', color: '#1d4ed8', icon: '𝕏' },
+                      { label: 'LinkedIn',  checked: false, bg: '#eef2ff', color: '#3730a3', icon: 'in' },
+                      { label: 'Facebook',  checked: false, bg: '#f5f3ff', color: '#5b21b6', icon: 'f'  },
+                    ].map(p => (
+                      <span
+                        key={p.label}
+                        className="inline-flex items-center gap-1.5 text-[13px] font-semibold px-3 py-1.5 rounded-full"
+                        style={{
+                          background: p.checked ? p.bg : '#f1f5f9',
+                          color: p.checked ? p.color : '#94a3b8',
+                          border: `1.5px solid ${p.checked ? p.color + '40' : '#e2e8f0'}`,
+                        }}
+                      >
+                        {p.checked && <span style={{ color: p.color }}>✓</span>}
+                        <span className="text-[11px]">{p.icon}</span>
+                        {p.label}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Brand input + CTA */}
+                <div className="flex flex-col gap-3">
                   <input
                     type="text"
                     value={heroNiche}
                     onChange={e => setHeroNiche(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleHeroGenerate()}
-                    placeholder="e.g. fitness coaching, SaaS startup, travel creator…"
-                    className="flex-1 rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                    placeholder="Your brand or niche — e.g. fitness coaching, travel creator…"
+                    className="hero-input w-full rounded-xl px-4 py-3.5 text-sm"
                     style={{
-                      background: 'rgba(255,255,255,0.05)',
-                      border: '1px solid rgba(34,197,94,0.2)',
-                      color: 'rgba(255,255,255,0.9)',
+                      background: '#ffffff',
+                      border: '1.5px solid #e2e8f0',
+                      color: '#111111',
+                      fontSize: '0.9375rem',
                     }}
-                    onFocus={e => (e.target.style.borderColor = 'rgba(34,197,94,0.5)')}
-                    onBlur={e => (e.target.style.borderColor = 'rgba(34,197,94,0.2)')}
                   />
                   <button
                     onClick={handleHeroGenerate}
                     disabled={!heroNiche || loading}
-                    className="btn-press px-5 py-3 rounded-xl font-bold text-sm transition-all"
+                    className="hero-btn-orange w-full py-4 rounded-xl font-black text-base"
                     style={{
-                      background: heroNiche ? 'linear-gradient(135deg, #16a34a, #22c55e)' : 'rgba(34,197,94,0.2)',
-                      color: heroNiche ? 'white' : 'rgba(134,239,172,0.5)',
-                      cursor: heroNiche ? 'pointer' : 'not-allowed',
-                      boxShadow: heroNiche ? '0 0 24px rgba(34,197,94,0.3)' : 'none',
-                    }}>
-                    {loading ? '…' : ctaLabel}
+                      opacity: (!heroNiche || loading) ? 0.5 : 1,
+                      cursor: (!heroNiche || loading) ? 'not-allowed' : 'pointer',
+                      fontSize: '1rem',
+                      letterSpacing: '-0.01em',
+                    }}
+                  >
+                    {loading ? 'Generating…' : 'Generate my calendar free →'}
                   </button>
+                  <button
+                    onClick={() => setShowProModal(true)}
+                    className="hero-btn-ghost w-full py-3 rounded-xl font-semibold text-sm"
+                  >
+                    See Pro Plan — $10/mo →
+                  </button>
+                  <p className="text-[11px] text-center" style={{ color: '#94a3b8' }}>
+                    {remaining} free generation{remaining !== 1 ? 's' : ''} left · No credit card needed
+                  </p>
                 </div>
-                <p className="text-[11px] mt-2" style={{ color: 'rgba(255,255,255,0.3)' }}>
-                  {remaining} free generations left · No credit card needed
-                </p>
+
+                {/* Platform icons row */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  {[
+                    { icon: '◉',  bg: '#fce7f3', color: '#be185d', label: 'Instagram' },
+                    { icon: '♪',  bg: '#f0fdf4', color: '#15803d', label: 'TikTok'    },
+                    { icon: '𝕏',  bg: '#eff6ff', color: '#1d4ed8', label: 'Twitter/X' },
+                    { icon: 'in', bg: '#eef2ff', color: '#3730a3', label: 'LinkedIn'  },
+                    { icon: 'f',  bg: '#f5f3ff', color: '#5b21b6', label: 'Facebook'  },
+                  ].map(p => (
+                    <div
+                      key={p.label}
+                      className="platform-icon"
+                      style={{ background: p.bg, color: p.color }}
+                      title={p.label}
+                    >
+                      {p.icon}
+                    </div>
+                  ))}
+                  <span className="text-xs font-medium" style={{ color: '#94a3b8' }}>5 platforms supported</span>
+                </div>
               </div>
 
-              {/* Platform pills */}
-              <div className="flex flex-wrap gap-2 fade-up delay-400">
-                {Object.entries(PLATFORM_META).map(([label, meta]) => (
-                  <span key={label}
-                    className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border font-medium"
-                    style={{ color: meta.color, background: meta.bg, borderColor: meta.border }}>
-                    <span className="font-bold text-[11px]">{meta.icon}</span> {label}
-                  </span>
-                ))}
-              </div>
-
-              {/* "30 days in 5 minutes" callout */}
-              <div className="flex items-center gap-4 fade-up delay-500">
-                {[
-                  { label: '30 days', sub: 'of content' },
-                  { label: '5 min', sub: 'to generate' },
-                  { label: '5 platforms', sub: 'supported' },
-                ].map(stat => (
-                  <div key={stat.label} className="text-center">
-                    <div className="text-lg font-black" style={{ color: '#22c55e' }}>{stat.label}</div>
-                    <div className="text-[10px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.3)' }}>{stat.sub}</div>
+              {/* RIGHT panel — June 2026 calendar preview */}
+              <div className="hidden lg:block">
+                <div
+                  className="rounded-2xl p-5 border"
+                  style={{ background: '#ffffff', borderColor: '#e2e8f0', boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }}
+                >
+                  {/* Calendar header */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <span className="text-sm font-black" style={{ color: '#111111' }}>June 2026</span>
+                      <span
+                        className="ml-2 text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                        style={{ background: '#fff7ed', color: '#f97316', border: '1px solid #fed7aa' }}
+                      >
+                        AI-filled
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      {[
+                        { label: 'IG',  bg: '#fce7f3', color: '#be185d' },
+                        { label: 'TT',  bg: '#f0fdf4', color: '#15803d' },
+                        { label: 'X',   bg: '#eff6ff', color: '#1d4ed8' },
+                        { label: 'LI',  bg: '#eef2ff', color: '#3730a3' },
+                      ].map(p => (
+                        <span
+                          key={p.label}
+                          className="text-[9px] px-1.5 py-0.5 rounded-full font-bold"
+                          style={{ background: p.bg, color: p.color }}
+                        >
+                          {p.label}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
 
-            {/* RIGHT — Calendar grid (desktop only) */}
-            <div className="hidden lg:block fade-up delay-200">
-              <div className="rounded-2xl p-5 border"
-                style={{ background: 'rgba(255,255,255,0.025)', borderColor: 'rgba(34,197,94,0.15)' }}>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm font-bold" style={{ color: 'rgba(255,255,255,0.8)' }}>May 2025</span>
-                  <div className="flex items-center gap-2">
-                    {Object.entries(PLATFORM_META).slice(0, 3).map(([label, meta]) => (
-                      <span key={label} className="text-[9px] px-1.5 py-0.5 rounded-full font-semibold"
-                        style={{ color: meta.color, background: meta.bg, border: `1px solid ${meta.border}` }}>
-                        {meta.icon} {meta.short}
+                  {/* Day headers */}
+                  <div className="grid grid-cols-7 gap-1 mb-1">
+                    {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => (
+                      <div
+                        key={d}
+                        className="text-center text-[9px] font-bold py-1 uppercase tracking-wider"
+                        style={{ color: '#94a3b8' }}
+                      >
+                        {d}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Calendar grid — June 2026 starts Monday */}
+                  {(() => {
+                    const cells: (number | null)[] = [
+                      ...Array(JUNE_START_DOW).fill(null),
+                      ...Array.from({ length: JUNE_DAYS }, (_, i) => i + 1),
+                    ];
+                    // pad to full weeks
+                    while (cells.length % 7 !== 0) cells.push(null);
+                    return (
+                      <div className="grid grid-cols-7 gap-1">
+                        {cells.map((day, idx) => (
+                          <EditorialCalCell key={idx} day={day} animIdx={day ?? 0} />
+                        ))}
+                      </div>
+                    );
+                  })()}
+
+                  {/* Legend */}
+                  <div
+                    className="mt-3 pt-3 border-t flex items-center gap-3 flex-wrap"
+                    style={{ borderColor: '#f1f5f9' }}
+                  >
+                    {Object.entries(JUNE_PILLS).map(([, pill]) => (
+                      <span
+                        key={pill.label}
+                        className="flex items-center gap-1 text-[9px] font-semibold"
+                        style={{ color: pill.color }}
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: pill.color }} />
+                        {pill.label}
                       </span>
                     ))}
-                    <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.3)' }}>+2 more</span>
+                    <span className="text-[9px]" style={{ color: '#f97316' }}>✨ AI generating…</span>
                   </div>
-                </div>
-
-                {/* Day labels */}
-                <div className="grid grid-cols-7 gap-1 mb-1">
-                  {DAY_LABELS.map(d => (
-                    <div key={d} className="text-center text-[9px] font-semibold py-1"
-                      style={{ color: 'rgba(255,255,255,0.25)' }}>{d}</div>
-                  ))}
-                </div>
-
-                {/* Calendar cells */}
-                <div className="grid grid-cols-7 gap-1">
-                  {CAL_DAYS.map(day => (
-                    <CalCell key={day} day={day} post={HERO_POST_MAP.get(day)} />
-                  ))}
-                </div>
-
-                <div className="mt-3 pt-3 border-t flex items-center gap-1 flex-wrap"
-                  style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
-                  <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.25)' }}>AI-generated:</span>
-                  {Object.entries(PLATFORM_META).map(([label, meta]) => (
-                    <span key={label} className="flex items-center gap-1 text-[9px]"
-                      style={{ color: meta.color }}>
-                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: meta.color }} />
-                      {label}
-                    </span>
-                  ))}
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Mobile week strip (lg:hidden) */}
-          <div className="lg:hidden mt-8 fade-up delay-400">
-            <p className="text-[10px] font-semibold uppercase tracking-wider mb-3"
-              style={{ color: 'rgba(134,239,172,0.6)' }}>
-              This week — AI-scheduled
-            </p>
-            <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollSnapType: 'x mandatory' }}>
-              {MOBILE_WEEK_POSTS.map((post, i) => {
-                const meta = PLATFORM_META[post.platform];
-                return (
-                  <div key={i} className="flex-shrink-0 rounded-xl p-3 border"
+            {/* Mobile — 4-card snap scroll strip */}
+            <div className="lg:hidden mt-8">
+              <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: '#f97316' }}>
+                Your June — AI-scheduled
+              </p>
+              <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollSnapType: 'x mandatory' }}>
+                {Object.entries(JUNE_PILLS).map(([day, pill], i) => (
+                  <div
+                    key={i}
+                    className="flex-shrink-0 rounded-xl p-3 border"
                     style={{
-                      width: 200,
+                      width: 180,
                       scrollSnapAlign: 'start',
-                      background: 'rgba(255,255,255,0.03)',
-                      borderColor: 'rgba(34,197,94,0.12)',
-                    }}>
+                      background: '#ffffff',
+                      borderColor: '#e2e8f0',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                    }}
+                  >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full font-semibold"
-                        style={{ color: meta?.color, background: meta?.bg, border: `1px solid ${meta?.border}` }}>
-                        {meta?.icon} {post.platform}
+                      <span
+                        className="text-[9px] px-2 py-0.5 rounded-full font-bold"
+                        style={{ background: pill.bg, color: pill.color }}
+                      >
+                        {pill.label}
                       </span>
-                      <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.3)' }}>Day {post.day}</span>
+                      <span className="text-[9px]" style={{ color: '#94a3b8' }}>Jun {day}</span>
                     </div>
-                    <p className="text-[11px] leading-snug line-clamp-3"
-                      style={{ color: 'rgba(255,255,255,0.65)' }}>
-                      {post.snippet}
+                    <p className="text-[11px] leading-snug" style={{ color: '#374151' }}>
+                      AI-generated post ready to publish
                     </p>
-                    <div className="mt-2 text-[9px] px-1.5 py-0.5 rounded inline-block"
-                      style={{ background: 'rgba(34,197,94,0.08)', color: 'rgba(134,239,172,0.6)' }}>
-                      {TYPE_LABELS[post.type] || post.type}
-                    </div>
                   </div>
-                );
-              })}
+                ))}
+              </div>
             </div>
           </div>
         </section>
 
         {/* ── HOW IT WORKS ─────────────────────────────────────────────── */}
-        <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-12">
+        <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-12" style={{ borderTop: '1px solid #f1f5f9' }}>
           <div className="flex flex-wrap items-center justify-center gap-0">
             {[
               { n: "1", label: "Tell us your niche", sub: "Brand, topic, or industry" },
@@ -685,17 +826,17 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
               { n: "→", label: "", sub: "", arrow: true },
               { n: "4", label: "Copy, export, or schedule", sub: "One click to any tool" },
             ].map((step, i) => step.arrow ? (
-              <span key={i} className="text-sm mx-3 hidden sm:block" style={{ color: 'rgba(34,197,94,0.4)' }}>→</span>
+              <span key={i} className="text-sm mx-3 hidden sm:block" style={{ color: '#f97316' }}>→</span>
             ) : (
               <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl reveal"
                 style={{ minWidth: 160 }}>
                 <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black flex-shrink-0"
-                  style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', color: '#22c55e' }}>
+                  style={{ background: '#fff7ed', border: '1px solid #fed7aa', color: '#f97316' }}>
                   {step.n}
                 </div>
                 <div>
-                  <div className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.85)' }}>{step.label}</div>
-                  <div className="text-[11px]" style={{ color: 'rgba(255,255,255,0.35)' }}>{step.sub}</div>
+                  <div className="text-sm font-semibold" style={{ color: '#111111' }}>{step.label}</div>
+                  <div className="text-[11px]" style={{ color: '#94a3b8' }}>{step.sub}</div>
                 </div>
               </div>
             ))}
@@ -703,13 +844,13 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
         </section>
 
         {/* ── SAMPLE POSTS ─────────────────────────────────────────────── */}
-        <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-16">
-          <div className="text-center mb-8 reveal">
+        <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-16" style={{ background: '#f8fafc' }}>
+          <div className="text-center mb-8 reveal pt-12">
             <p className="text-xs font-bold uppercase tracking-widest mb-2"
-              style={{ color: 'rgba(134,239,172,0.6)' }}>
+              style={{ color: '#f97316' }}>
               Sample AI-generated posts
             </p>
-            <h2 className="text-2xl font-black" style={{ color: 'rgba(255,255,255,0.9)' }}>
+            <h2 className="text-2xl font-black" style={{ color: '#111111' }}>
               What your calendar looks like
             </h2>
           </div>
@@ -722,13 +863,11 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
 
         {/* ── AI GENERATOR ──────────────────────────────────────────────── */}
         <section id="generator" ref={generatorRef} className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-24">
-          <div className="text-center mb-8 reveal">
-            <h2 className="text-3xl font-black mb-2">
-              <span style={{ background: 'linear-gradient(135deg, #22c55e, #4ade80)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                Generate your calendar
-              </span>
+          <div className="text-center mb-8 reveal pt-8">
+            <h2 className="text-3xl font-black mb-2" style={{ color: '#111111' }}>
+              Generate your calendar
             </h2>
-            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            <p className="text-sm" style={{ color: '#94a3b8' }}>
               {remaining} free generation{remaining !== 1 ? 's' : ''} left today
             </p>
           </div>
@@ -737,13 +876,13 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
             {/* Config panel */}
             <div className="space-y-5">
               <div className="rounded-2xl border p-6"
-                style={{ background: 'rgba(255,255,255,0.025)', borderColor: 'rgba(34,197,94,0.12)' }}>
-                <h3 className="font-bold text-sm mb-5" style={{ color: 'rgba(255,255,255,0.85)' }}>Configure your calendar</h3>
+                style={{ background: '#ffffff', borderColor: '#e2e8f0', boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}>
+                <h3 className="font-bold text-sm mb-5" style={{ color: '#111111' }}>Configure your calendar</h3>
                 <div className="space-y-5">
 
                   <div>
                     <label className="text-xs uppercase tracking-wider mb-2 block"
-                      style={{ color: 'rgba(255,255,255,0.4)' }}>Brand / Topic</label>
+                      style={{ color: '#94a3b8' }}>Brand / Topic</label>
                     <textarea
                       value={topic}
                       onChange={e => setTopic(e.target.value)}
@@ -751,18 +890,18 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
                       rows={3}
                       className="w-full rounded-xl px-4 py-3 text-sm outline-none resize-none transition-all"
                       style={{
-                        background: 'rgba(255,255,255,0.04)',
-                        border: '1px solid rgba(34,197,94,0.15)',
-                        color: 'rgba(255,255,255,0.9)',
+                        background: '#f8fafc',
+                        border: '1.5px solid #e2e8f0',
+                        color: '#111111',
                       }}
-                      onFocus={e => (e.target.style.borderColor = 'rgba(34,197,94,0.4)')}
-                      onBlur={e => (e.target.style.borderColor = 'rgba(34,197,94,0.15)')}
+                      onFocus={e => { e.target.style.borderColor = '#f97316'; e.target.style.boxShadow = '0 0 0 3px rgba(249,115,22,0.1)'; }}
+                      onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
                     />
                   </div>
 
                   <div>
                     <label className="text-xs uppercase tracking-wider mb-2 block"
-                      style={{ color: 'rgba(255,255,255,0.4)' }}>Platforms</label>
+                      style={{ color: '#94a3b8' }}>Platforms</label>
                     <div className="flex flex-wrap gap-2">
                       {PLATFORMS.map(p => {
                         const meta = PLATFORM_META[p];
@@ -771,9 +910,9 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
                           <button key={p} onClick={() => togglePlatform(p)}
                             className="btn-press px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
                             style={{
-                              color: active ? meta?.color : 'rgba(255,255,255,0.45)',
-                              background: active ? meta?.bg : 'rgba(255,255,255,0.03)',
-                              border: `1px solid ${active ? meta?.border : 'rgba(255,255,255,0.08)'}`,
+                              color: active ? meta?.color : '#94a3b8',
+                              background: active ? meta?.bg : '#f1f5f9',
+                              border: `1px solid ${active ? meta?.border : '#e2e8f0'}`,
                             }}>
                             {meta?.icon} {p}
                           </button>
@@ -784,16 +923,16 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
 
                   <div>
                     <label className="text-xs uppercase tracking-wider mb-2 block"
-                      style={{ color: 'rgba(255,255,255,0.4)' }}>Tone</label>
+                      style={{ color: '#94a3b8' }}>Tone</label>
                     <div className="flex rounded-lg overflow-hidden border"
-                      style={{ borderColor: 'rgba(34,197,94,0.2)' }}>
+                      style={{ borderColor: '#e2e8f0' }}>
                       {TONE_DIAL.map((t, i) => (
                         <button key={t} onClick={() => handleToneChange(t)}
                           className="btn-press flex-1 py-2 text-xs font-semibold transition-all"
                           style={{
-                            color: tone === t ? '#fff' : 'rgba(255,255,255,0.45)',
-                            background: tone === t ? 'rgba(34,197,94,0.25)' : 'rgba(255,255,255,0.02)',
-                            borderRight: i < TONE_DIAL.length - 1 ? '1px solid rgba(34,197,94,0.15)' : 'none',
+                            color: tone === t ? '#ffffff' : '#64748b',
+                            background: tone === t ? '#f97316' : '#f8fafc',
+                            borderRight: i < TONE_DIAL.length - 1 ? '1px solid #e2e8f0' : 'none',
                           }}>
                           {t}
                         </button>
@@ -803,24 +942,24 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
 
                   <div>
                     <label className="text-xs uppercase tracking-wider mb-2 block"
-                      style={{ color: 'rgba(255,255,255,0.4)' }}>
-                      Weeks — <span style={{ color: '#22c55e' }}>{weeks}w</span>
+                      style={{ color: '#94a3b8' }}>
+                      Weeks — <span style={{ color: '#f97316' }}>{weeks}w</span>
                     </label>
                     <input type="range" min={1} max={4} value={weeks}
                       onChange={e => setWeeks(Number(e.target.value))}
-                      className="w-full accent-green-500" />
-                    <div className="flex justify-between text-[10px] mt-1" style={{ color: 'rgba(255,255,255,0.2)' }}>
+                      className="w-full accent-orange-500" />
+                    <div className="flex justify-between text-[10px] mt-1" style={{ color: '#cbd5e1' }}>
                       <span>1w</span><span>2w</span><span>3w</span><span>4w</span>
                     </div>
                   </div>
 
                   {isLimited ? (
                     <div className="w-full py-3.5 rounded-xl border text-center"
-                      style={{ background: 'rgba(34,197,94,0.06)', borderColor: 'rgba(34,197,94,0.2)' }}>
-                      <p className="text-sm font-semibold" style={{ color: '#86efac' }}>Daily limit reached (3 free / day)</p>
+                      style={{ background: '#fff7ed', borderColor: '#fed7aa' }}>
+                      <p className="text-sm font-semibold" style={{ color: '#c2410c' }}>Daily limit reached (3 free / day)</p>
                       <button onClick={() => setShowProModal(true)}
                         className="text-xs mt-0.5 transition-colors hover:opacity-80"
-                        style={{ color: 'rgba(255,255,255,0.5)' }}>
+                        style={{ color: '#94a3b8' }}>
                         Upgrade to Pro for unlimited →
                       </button>
                     </div>
@@ -828,10 +967,9 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
                     <button onClick={() => generate()} disabled={!topic || loading}
                       className="btn-press w-full py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2"
                       style={{
-                        background: topic ? 'linear-gradient(135deg, #16a34a, #22c55e)' : 'rgba(34,197,94,0.15)',
-                        color: topic ? 'white' : 'rgba(134,239,172,0.4)',
+                        background: topic ? '#f97316' : '#f1f5f9',
+                        color: topic ? 'white' : '#94a3b8',
                         cursor: (!topic || loading) ? 'not-allowed' : 'pointer',
-                        boxShadow: topic ? '0 0 25px rgba(34,197,94,0.25)' : 'none',
                         opacity: loading ? 0.8 : 1,
                       }}>
                       {loading ? (
@@ -846,15 +984,15 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
               {/* Quick actions when posts available */}
               {posts.length > 0 && (
                 <div className="rounded-xl border p-4 flex gap-2"
-                  style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(34,197,94,0.1)' }}>
+                  style={{ background: '#ffffff', borderColor: '#e2e8f0' }}>
                   <button onClick={copyAll}
                     className="btn-press flex-1 py-2 rounded-lg text-xs font-medium border transition-all"
-                    style={{ borderColor: 'rgba(34,197,94,0.2)', color: 'rgba(134,239,172,0.7)', background: 'rgba(34,197,94,0.06)' }}>
+                    style={{ borderColor: '#fed7aa', color: '#c2410c', background: '#fff7ed' }}>
                     Copy all
                   </button>
                   <button onClick={downloadCSV}
                     className="btn-press flex-1 py-2 rounded-lg text-xs font-medium border transition-all"
-                    style={{ borderColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)', background: 'rgba(255,255,255,0.03)' }}>
+                    style={{ borderColor: '#e2e8f0', color: '#64748b', background: '#f8fafc' }}>
                     Export CSV
                   </button>
                 </div>
@@ -870,9 +1008,9 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
                       <button key={p} onClick={() => setFilterPlatform(p)}
                         className="btn-press text-xs px-3 py-1 rounded-full border transition-all"
                         style={{
-                          color: filterPlatform === p ? '#86efac' : 'rgba(255,255,255,0.4)',
-                          background: filterPlatform === p ? 'rgba(34,197,94,0.1)' : 'transparent',
-                          borderColor: filterPlatform === p ? 'rgba(34,197,94,0.35)' : 'rgba(255,255,255,0.1)',
+                          color: filterPlatform === p ? '#f97316' : '#64748b',
+                          background: filterPlatform === p ? '#fff7ed' : '#f8fafc',
+                          borderColor: filterPlatform === p ? '#fed7aa' : '#e2e8f0',
                         }}>
                         {p}
                       </button>
@@ -880,15 +1018,15 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
                   </div>
                   {types.length > 0 && (
                     <>
-                      <div className="h-4 w-px mx-1" style={{ background: 'rgba(255,255,255,0.1)' }} />
+                      <div className="h-4 w-px mx-1" style={{ background: '#e2e8f0' }} />
                       <div className="flex gap-1.5 flex-wrap">
                         {["All", ...types].map(t => (
                           <button key={t} onClick={() => setFilterType(t)}
                             className="btn-press text-xs px-3 py-1 rounded-full border transition-all"
                             style={{
-                              color: filterType === t ? '#86efac' : 'rgba(255,255,255,0.4)',
-                              background: filterType === t ? 'rgba(34,197,94,0.08)' : 'transparent',
-                              borderColor: filterType === t ? 'rgba(34,197,94,0.25)' : 'rgba(255,255,255,0.1)',
+                              color: filterType === t ? '#f97316' : '#64748b',
+                              background: filterType === t ? '#fff7ed' : '#f8fafc',
+                              borderColor: filterType === t ? '#fed7aa' : '#e2e8f0',
                             }}>
                             {TYPE_LABELS[t] || t}
                           </button>
@@ -896,7 +1034,7 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
                       </div>
                     </>
                   )}
-                  <span className="ml-auto text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                  <span className="ml-auto text-xs" style={{ color: '#94a3b8' }}>
                     {filteredPosts.length} posts
                   </span>
                 </div>
@@ -904,9 +1042,9 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
 
               {apiError && (
                 <div className="rounded-2xl border p-6 text-center mb-4"
-                  style={{ borderColor: 'rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.08)' }}>
-                  <p className="font-semibold mb-1" style={{ color: '#fca5a5' }}>Could not generate calendar</p>
-                  <p className="text-sm" style={{ color: 'rgba(252,165,165,0.7)' }}>{apiError}</p>
+                  style={{ borderColor: '#fecaca', background: '#fef2f2' }}>
+                  <p className="font-semibold mb-1" style={{ color: '#b91c1c' }}>Could not generate calendar</p>
+                  <p className="text-sm" style={{ color: '#dc2626' }}>{apiError}</p>
                 </div>
               )}
 
@@ -918,23 +1056,23 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
                 </div>
               ) : posts.length > 0 ? (
                 <div className="h-48 rounded-2xl border flex items-center justify-center"
-                  style={{ borderColor: 'rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)' }}>
-                  <p className="text-sm" style={{ color: 'rgba(255,255,255,0.3)' }}>No posts match the current filter</p>
+                  style={{ borderColor: '#e2e8f0', background: '#f8fafc' }}>
+                  <p className="text-sm" style={{ color: '#94a3b8' }}>No posts match the current filter</p>
                 </div>
               ) : (
                 <div className="rounded-2xl border flex flex-col items-center justify-center py-20 gap-4"
-                  style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(34,197,94,0.08)' }}>
+                  style={{ background: '#ffffff', borderColor: '#e2e8f0' }}>
                   <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl"
-                    style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.25)' }}>
+                    style={{ background: '#fff7ed', border: '1px solid #fed7aa' }}>
                     📅
                   </div>
-                  <p className="text-sm max-w-xs text-center" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                  <p className="text-sm max-w-xs text-center" style={{ color: '#64748b' }}>
                     Describe your brand above and click generate to fill your content calendar
                   </p>
                   <div className="flex flex-wrap gap-2 justify-center mt-1">
                     {["Copy each post with 1 click", "Platform-specific hashtags", "Engagement tips included", "Export to CSV"].map(f => (
                       <span key={f} className="text-[10px] px-2.5 py-1 rounded-full border"
-                        style={{ borderColor: 'rgba(34,197,94,0.15)', color: 'rgba(134,239,172,0.5)', background: 'rgba(34,197,94,0.05)' }}>
+                        style={{ borderColor: '#fed7aa', color: '#c2410c', background: '#fff7ed' }}>
                         {f}
                       </span>
                     ))}
@@ -946,56 +1084,53 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
         </section>
 
         {/* ── PRICING ──────────────────────────────────────────────────── */}
-        <section id="pricing" className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 pb-20">
+        <section id="pricing" className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 pb-20" style={{ background: '#f8fafc', paddingTop: '3rem' }}>
           <div className="text-center mb-10 reveal">
-            <h2 className="text-3xl font-black mb-2">
-              <span style={{ background: 'linear-gradient(135deg, #22c55e, #4ade80)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                Simple pricing
-              </span>
+            <h2 className="text-3xl font-black mb-2" style={{ color: '#111111' }}>
+              Simple pricing
             </h2>
-            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.35)' }}>3 free calendars per day · No card required</p>
+            <p className="text-sm" style={{ color: '#94a3b8' }}>3 free calendars per day · No card required</p>
           </div>
           <div className="grid md:grid-cols-2 gap-4">
             {/* Free */}
             <div className="rounded-2xl border p-8"
-              style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.07)' }}>
+              style={{ background: '#ffffff', borderColor: '#e2e8f0' }}>
               <div className="text-xs font-bold uppercase tracking-widest mb-1"
-                style={{ color: 'rgba(255,255,255,0.25)' }}>Free</div>
-              <div className="text-4xl font-black mb-1" style={{ color: 'rgba(255,255,255,0.4)' }}>$0</div>
-              <div className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.2)' }}>forever</div>
+                style={{ color: '#94a3b8' }}>Free</div>
+              <div className="text-4xl font-black mb-1" style={{ color: '#111111' }}>$0</div>
+              <div className="text-sm mb-6" style={{ color: '#94a3b8' }}>forever</div>
               <ul className="space-y-2.5 mb-7">
                 {['3 calendars / day', '5 platforms', 'Up to 4 weeks', 'Engagement tips', 'Copy & export'].map(f => (
-                  <li key={f} className="flex items-center gap-2 text-sm" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                    <span style={{ color: 'rgba(255,255,255,0.2)' }}>✓</span> {f}
+                  <li key={f} className="flex items-center gap-2 text-sm" style={{ color: '#64748b' }}>
+                    <span style={{ color: '#94a3b8' }}>✓</span> {f}
                   </li>
                 ))}
               </ul>
               <div className="w-full py-3 rounded-xl border text-center text-sm font-bold"
-                style={{ borderColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.25)' }}>
+                style={{ borderColor: '#e2e8f0', color: '#94a3b8' }}>
                 Current plan
               </div>
             </div>
             {/* Pro */}
             <div className="rounded-2xl border p-8 relative overflow-hidden"
-              style={{ background: 'rgba(34,197,94,0.06)', borderColor: 'rgba(34,197,94,0.25)', boxShadow: '0 0 40px rgba(34,197,94,0.08)' }}>
+              style={{ background: '#111111', borderColor: '#111111', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
               <div className="absolute top-4 right-4 text-[10px] px-2.5 py-1 rounded-full font-bold"
-                style={{ background: 'rgba(34,197,94,0.15)', color: '#86efac', border: '1px solid rgba(34,197,94,0.3)' }}>
+                style={{ background: '#f97316', color: '#ffffff' }}>
                 Most popular
               </div>
               <div className="text-xs font-bold uppercase tracking-widest mb-1"
-                style={{ color: '#86efac' }}>Pro</div>
+                style={{ color: '#f97316' }}>Pro</div>
               <div className="text-4xl font-black mb-0" style={{ color: 'white' }}>$10</div>
-              <div className="text-sm mb-6" style={{ color: '#22c55e' }}>/month</div>
+              <div className="text-sm mb-6" style={{ color: '#f97316' }}>/month</div>
               <ul className="space-y-2.5 mb-7">
                 {['Unlimited calendars', 'All 5 platforms', 'Scheduling links', 'Full analytics dashboard', 'Brand voice memory', 'Team seats'].map(f => (
                   <li key={f} className="flex items-center gap-2 text-sm" style={{ color: 'rgba(255,255,255,0.75)' }}>
-                    <span style={{ color: '#22c55e' }}>✓</span> {f}
+                    <span style={{ color: '#f97316' }}>✓</span> {f}
                   </li>
                 ))}
               </ul>
               <button onClick={() => setShowProModal(true)}
-                className="btn-press w-full py-3 rounded-xl font-bold text-sm transition-all"
-                style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)', color: 'white', boxShadow: '0 0 25px rgba(34,197,94,0.3)' }}>
+                className="hero-btn-orange btn-press w-full py-3 rounded-xl font-bold text-sm">
                 Go Pro ✦
               </button>
             </div>
@@ -1006,21 +1141,21 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
         <section className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 pb-16">
           <div className="text-center mb-8 reveal">
             <p className="text-xs font-bold uppercase tracking-widest mb-2"
-              style={{ color: 'rgba(134,239,172,0.6)' }}>How we compare</p>
-            <h2 className="text-2xl font-black" style={{ color: 'rgba(255,255,255,0.9)' }}>
+              style={{ color: '#f97316' }}>How we compare</p>
+            <h2 className="text-2xl font-black" style={{ color: '#111111' }}>
               AI generation vs. manual scheduling
             </h2>
           </div>
           <div className="overflow-x-auto rounded-2xl border"
-            style={{ borderColor: 'rgba(34,197,94,0.12)', background: 'rgba(255,255,255,0.02)' }}>
-            <table className="w-full" style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', borderCollapse: 'collapse' }}>
+            style={{ borderColor: '#e2e8f0', background: '#ffffff' }}>
+            <table className="w-full" style={{ fontSize: 13, color: '#374151', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
                   {['Feature', 'DraftCal', 'Buffer', 'Later', 'Hootsuite'].map((h, i) => (
                     <th key={h} style={{
                       padding: '12px 16px', textAlign: 'left', fontSize: 11,
                       fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
-                      color: i === 1 ? '#86efac' : 'rgba(255,255,255,0.3)',
+                      color: i === 1 ? '#f97316' : '#94a3b8',
                     }}>{h}</th>
                   ))}
                 </tr>
@@ -1034,14 +1169,14 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
                   ['Free tier', '3/day', '3 channels', '1 profile', '30 days'],
                   ['Price (pro)', '$10/mo', '$18/mo', '$18/mo', '$99/mo'],
                 ].map(row => (
-                  <tr key={row[0]} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                  <tr key={row[0]} style={{ borderBottom: '1px solid #f1f5f9' }}>
                     {row.map((cell, i) => (
                       <td key={i} style={{
                         padding: '11px 16px',
                         fontWeight: i === 0 ? 600 : 400,
                         color: i === 1
-                          ? (['✓ Full month', '✓ Auto', '✓ Built-in', '✓', '3/day', '$10/mo'].includes(cell) ? '#86efac' : 'rgba(255,255,255,0.6)')
-                          : cell === '✗' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.5)',
+                          ? (['✓ Full month', '✓ Auto', '✓ Built-in', '✓', '3/day', '$10/mo'].includes(cell) ? '#f97316' : '#374151')
+                          : cell === '✗' ? '#cbd5e1' : '#64748b',
                       }}>{cell}</td>
                     ))}
                   </tr>
