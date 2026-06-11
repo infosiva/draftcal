@@ -6,12 +6,15 @@ import Footer from '../../components/Footer'
 import DesignEffects from '@/components/DesignEffects'
 import AnimatedBackground from '@/components/AnimatedBackground'
 import ChatBot from '@/components/ChatBot'
+import FeedbackWidget from '@/components/FeedbackWidget'
 import { getSiteFlags } from '@/lib/flags'
 import BackToTop from '@/components/BackToTop'
+import FloatingChatWrapper from '@/components/FloatingChatWrapper'
 import type { BrandConfig } from '@/components/SharedNavbar'
 import CookieConsent from "../../components/CookieConsent"
 import StickyFooterCTA from "../../components/StickyFooterCTA"
 import { siteConfig } from '@/site.config'
+import { loadSiteTheme, buildThemeStyleTag, isWidgetHidden } from '@/lib/theme-loader'
 
 const brand: BrandConfig = {
   name: siteConfig.name,
@@ -77,7 +80,17 @@ const faqJsonLd = {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const flags = await getSiteFlags('draftcal')
+  const [flags, theme] = await Promise.all([
+    getSiteFlags('draftcal'),
+    loadSiteTheme('draftcal'),
+  ])
+
+  const themeCSS = buildThemeStyleTag(theme, {
+    background: '#0f0308',
+    primary: '#e11d48',
+    secondary: '#fb7185',
+  })
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -108,12 +121,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             background: rgba(15,3,8,0.65) !important;
             border-color: rgba(225,29,72,0.12) !important;
           }
-          /* Platform tag accent colours */
           .platform-twitter  { color: #38bdf8; background: rgba(56,189,248,0.08); border-color: rgba(56,189,248,0.2); }
           .platform-linkedin { color: #818cf8; background: rgba(129,140,248,0.08); border-color: rgba(129,140,248,0.2); }
           .platform-instagram{ color: #f472b6; background: rgba(244,114,182,0.08); border-color: rgba(244,114,182,0.2); }
           @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
           @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+          ${themeCSS}
         `}} />
       </head>
       <body className="flex flex-col min-h-screen">
@@ -126,12 +139,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <SharedNavbar brand={brand} />
         <main className="flex-1 pt-16">{children}</main>
         <Footer siteName={siteConfig.name} />
-        {flags.chatbot && <ChatBot />}
-        <BackToTop accentColor="#22c55e" />
-        <CookieConsent />
-        <StickyFooterCTA />
+        {flags.chatbot && !isWidgetHidden(theme, 'chatbot') && <ChatBot />}
+        {!isWidgetHidden(theme, 'backToTop') && <BackToTop accentColor="#e11d48" />}
+        {!isWidgetHidden(theme, 'cookieConsent') && <CookieConsent />}
+        {!isWidgetHidden(theme, 'stickyFooterCTA') && <StickyFooterCTA />}
+        <FloatingChatWrapper />
         <Script defer data-domain="draftcal.app" src="https://plausible.io/js/script.js" strategy="afterInteractive" />
         <Script defer data-site="draftcal.app" src="http://31.97.56.148:3098/t.js" strategy="afterInteractive" />
+        <FeedbackWidget siteName="DraftCal" accentColor="#0ea5e9" position="left" />
       </body>
     </html>
   )
