@@ -563,13 +563,17 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
 
             {/* Badge */}
             <div className="flex justify-start mb-6">
-              <span
-                className="inline-flex items-center gap-2 text-[11px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest"
-                style={{ background: '#fff7ed', border: '1.5px solid #fed7aa', color: '#c2410c' }}
-              >
-                <span className="w-1.5 h-1.5 rounded-full animate-pulse flex-shrink-0" style={{ background: '#f97316' }} />
-                10,000+ creators use DraftCal
-              </span>
+              <div className="flex flex-wrap gap-2">
+                {['AI-powered scheduling', 'Free to start', 'No credit card'].map(pill => (
+                  <span
+                    key={pill}
+                    className="inline-flex items-center gap-2 text-[11px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest"
+                    style={{ background: '#fff7ed', border: '1.5px solid #fed7aa', color: '#c2410c' }}
+                  >
+                    {pill}
+                  </span>
+                ))}
+              </div>
             </div>
 
             {/* Split layout */}
