@@ -9,20 +9,20 @@
    via CSS vars injected in layout.tsx
 ───────────────────────────────────────── */
 :root {
-  --background: #0a0f1e;
-  --surface-1:  #0d1526;
-  --surface-2:  #111827;
-  --foreground: #f1f5f9;
-  --text-2:     #94a3b8;
-  --text-3:     #475569;
+  --background: #ffffff;
+  --surface-1:  #f8fafc;
+  --surface-2:  #f1f5f9;
+  --foreground: #0f172a;
+  --text-2:     #475569;
+  --text-3:     #64748b;
 
   --accent:     #3b82f6;
   --accent-2:   #60a5fa;
-  --card:       #111827;
-  --card-foreground: #e2e8f0;
-  --border:     #1e3a5f;
-  --muted:      #0f172a;
-  --muted-foreground: #94a3b8;
+  --card:       #ffffff;
+  --card-foreground: #0f172a;
+  --border:     #e2e8f0;
+  --muted:      #f1f5f9;
+  --muted-foreground: #64748b;
 
   --border-subtle:  rgb(59 130 246 / 0.08);
   --border-default: rgb(59 130 246 / 0.14);
@@ -40,7 +40,7 @@
   /* Theme vars — injected by layout.tsx */
   --theme-primary:   #3b82f6;
   --theme-secondary: #60a5fa;
-  --theme-base:      #0a0f1e;
+  --theme-base:      #ffffff;
 }
 
 /* ─────────────────────────────────────────
@@ -66,14 +66,14 @@ body {
    Glass surfaces
 ───────────────────────────────────────── */
 .glass {
-  background: rgb(6 6 16 / 0.60);
+  background: rgba(255,255,255,0.85);
   backdrop-filter: blur(20px) saturate(140%);
   -webkit-backdrop-filter: blur(20px) saturate(140%);
   border: 1px solid var(--border-subtle);
 }
 
 .glass-strong {
-  background: rgb(6 6 16 / 0.80);
+  background: rgba(255,255,255,0.92);
   backdrop-filter: blur(24px) saturate(160%);
   -webkit-backdrop-filter: blur(24px) saturate(160%);
   border: 1px solid var(--border-default);
@@ -772,9 +772,4 @@ pre {
   html, body { overflow-x: hidden !important; }
 }
 
-/* ── Aurora background blobs ── */
-.aurora { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: -1; will-change: transform; }
-.aurora-primary { top: -15%; left: -10%; width: min(700px, 90vw); height: min(700px, 90vw); background: radial-gradient(circle, color-mix(in srgb, var(--theme-primary, #7c3aed) 30%, transparent) 0%, transparent 70%); animation: aurora-drift 18s ease-in-out infinite alternate; }
-.aurora-secondary { top: 35%; right: -12%; width: min(550px, 80vw); height: min(550px, 80vw); background: radial-gradient(circle, color-mix(in srgb, var(--theme-secondary, #a78bfa) 20%, transparent) 0%, transparent 70%); animation: aurora-drift 24s ease-in-out infinite alternate-reverse; }
-.aurora-third { bottom: -10%; left: 35%; width: min(480px, 70vw); height: min(480px, 70vw); background: radial-gradient(circle, color-mix(in srgb, var(--theme-primary, #7c3aed) 18%, transparent) 0%, transparent 70%); animation: aurora-drift 30s ease-in-out infinite alternate; }
-@keyframes aurora-drift { from { transform: translate(0, 0) scale(1); } to { transform: translate(30px, 20px) scale(1.08); } }
+/* Aurora blobs disabled — light productivity theme, no bg blobs */
