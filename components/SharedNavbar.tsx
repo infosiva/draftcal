@@ -28,9 +28,25 @@ export default function SharedNavbar({ brand }: { brand: BrandConfig }) {
         ${scrolled ? 'bg-[#07060f]/90 backdrop-blur-xl border-b border-white/[0.06] shadow-lg' : 'bg-transparent'}`}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
-          <span className="text-2xl">{brand.icon}</span>
-          <span className="font-bold text-white text-[15px] tracking-tight">{brand.name}</span>
+        <Link href="/" className="flex items-center gap-2 flex-shrink-0">
+          <span style={{
+            width: 30, height: 30, borderRadius: 8, flexShrink: 0,
+            background: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <rect x="3" y="4" width="18" height="18" rx="2" stroke="white" strokeWidth="2" fill="none"/>
+              <line x1="3" y1="9" x2="21" y2="9" stroke="white" strokeWidth="2"/>
+              <line x1="8" y1="2" x2="8" y2="6" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+              <line x1="16" y1="2" x2="16" y2="6" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+              <circle cx="8" cy="14" r="1.2" fill="white"/>
+              <circle cx="12" cy="14" r="1.2" fill="white"/>
+              <circle cx="16" cy="14" r="1.2" fill="white"/>
+            </svg>
+          </span>
+          <span className="font-black text-[17px] tracking-tight" style={{ color: '#fff', letterSpacing: '-0.03em' }}>
+            Draft<span style={{ color: '#d97706' }}>Cal</span>
+          </span>
         </Link>
 
         {/* Desktop nav */}
