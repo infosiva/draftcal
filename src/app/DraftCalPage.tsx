@@ -4,6 +4,7 @@ import { useGate } from '@/lib/shared/useGate'
 import RegisterGate from '@/lib/shared/RegisterGate'
 import { siteConfig } from '@/site.config'
 import type { ContentOverrides } from '@/lib/content'
+import LiveStatsBar from '@/components/LiveStatsBar'
 
 // ── Platform config ──────────────────────────────────────────────────────────
 const PLATFORMS = ["Twitter/X", "LinkedIn", "Instagram", "Facebook", "TikTok"];
@@ -424,6 +425,7 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
         setPosts(data.posts || []);
         setFilterPlatform("All");
         setFilterType("All");
+        fetch('/api/session-stats', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ event: 'draft_created' }) }).catch(() => {});
         setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
       }
     } catch {
@@ -671,6 +673,11 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
                   <p className="text-[11px] text-center" style={{ color: '#94a3b8' }}>
                     {remaining} free generation{remaining !== 1 ? 's' : ''} left · No credit card needed
                   </p>
+                  <p className="text-[11px] text-center">
+                    <button onClick={() => setShowProModal(true)} className="underline" style={{ color: 'var(--accent,#d97706)' }}>
+                      Have a promo code?
+                    </button>
+                  </p>
                 </div>
 
                 {/* Platform icons row */}
@@ -817,6 +824,8 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
             </div>
           </div>
         </section>
+
+        <LiveStatsBar />
 
         {/* ── HOW IT WORKS ─────────────────────────────────────────────── */}
         <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-12" style={{ borderTop: '1px solid #f1f5f9' }}>

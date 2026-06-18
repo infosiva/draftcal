@@ -86,9 +86,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   ])
 
   const themeCSS = buildThemeStyleTag(theme, {
-    background: '#0f0308',
-    primary: '#e11d48',
-    secondary: '#fb7185',
+    background: '#fffbf5',
+    primary: '#d97706',
+    secondary: '#b45309',
   })
 
   return (
@@ -102,25 +102,29 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link href="https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <style dangerouslySetInnerHTML={{ __html: `
           :root {
-            --theme-primary: #e11d48;
-            --theme-secondary: #fb7185;
-            --theme-base: #0f0308;
-            --background: #0f0308;
-            --surface-1: #1a0510;
-            --surface-2: #260818;
-            --foreground: #fff1f2;
-            --text-2: #fda4af;
-            --border-default: rgba(225,29,72,0.15);
-            --border-strong: rgba(225,29,72,0.3);
+            --theme-primary: #d97706;
+            --theme-secondary: #b45309;
+            --theme-base: #fffbf5;
+            --background: #fffbf5;
+            --surface-1: #ffffff;
+            --surface-2: #fffbf5;
+            --foreground: #0f172a;
+            --text-2: #78350f;
+            --border-default: rgba(217,119,6,0.14);
+            --border-strong: rgba(217,119,6,0.28);
+            --border: #fde68a;
+            --accent: #d97706;
+            --accent-2: #b45309;
             --radius: 0.75rem;
             --radius-lg: 1.25rem;
             --radius-xl: 2rem;
           }
-          body { font-family: 'Inter', system-ui, sans-serif !important; }
+          body { background: var(--background, #fffbf5) !important; color: var(--foreground, #0f172a); font-family: 'Inter', system-ui, sans-serif !important; }
           h1, h2, h3, .display { font-family: 'Calistoga', serif !important; letter-spacing: -0.02em; }
           .glass {
-            background: rgba(15,3,8,0.65) !important;
-            border-color: rgba(225,29,72,0.12) !important;
+            background: rgba(255,251,245,0.85) !important;
+            border-color: rgba(217,119,6,0.10) !important;
+            backdrop-filter: blur(20px) saturate(140%);
           }
           .platform-twitter  { color: #38bdf8; background: rgba(56,189,248,0.08); border-color: rgba(56,189,248,0.2); }
           .platform-linkedin { color: #818cf8; background: rgba(129,140,248,0.08); border-color: rgba(129,140,248,0.2); }
@@ -131,23 +135,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         `}} />
       </head>
       <body className="flex flex-col min-h-screen">
-        <div className="aurora aurora-primary" aria-hidden />
-        <div className="aurora aurora-secondary" aria-hidden />
-        <div className="aurora aurora-third" aria-hidden />
-        <AnimatedBackground />
-        <div className="grain" aria-hidden />
         <DesignEffects />
         <SharedNavbar brand={brand} />
         <main className="flex-1 pt-16">{children}</main>
         <Footer siteName={siteConfig.name} />
         {flags.chatbot && !isWidgetHidden(theme, 'chatbot') && <ChatBot />}
-        {!isWidgetHidden(theme, 'backToTop') && <BackToTop accentColor="#e11d48" />}
+        {!isWidgetHidden(theme, 'backToTop') && <BackToTop accentColor="#d97706" />}
         {!isWidgetHidden(theme, 'cookieConsent') && <CookieConsent />}
         {!isWidgetHidden(theme, 'stickyFooterCTA') && <StickyFooterCTA />}
         <FloatingChatWrapper />
         <Script defer data-domain="draftcal.app" src="https://plausible.io/js/script.js" strategy="afterInteractive" />
         <Script defer data-site="draftcal.app" src="http://31.97.56.148:3098/t.js" strategy="afterInteractive" />
-        <FeedbackWidget siteName="DraftCal" accentColor="#0ea5e9" position="left" />
+        <FeedbackWidget siteName="DraftCal" accentColor="#d97706" position="left" />
       </body>
     </html>
   )

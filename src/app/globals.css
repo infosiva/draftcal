@@ -11,16 +11,16 @@
 :root {
   --background: #fffbf5;
   --surface-1:  #ffffff;
-  --surface-2:  #fef3c7;
-  --foreground: #1c1007;
-  --text-2:     #78490a;
+  --surface-2:  #fffbf5;
+  --foreground: #0f172a;
+  --text-2:     #78350f;
   --text-3:     #a16207;
 
   --accent:     #d97706;
-  --accent-2:   #f59e0b;
+  --accent-2:   #b45309;
   --accent-dim: rgba(217,119,6,0.12);
   --card:       #ffffff;
-  --card-foreground: #1c1007;
+  --card-foreground: #0f172a;
   --border:     #fde68a;
   --muted:      #fef3c7;
   --muted-foreground: #92400e;
