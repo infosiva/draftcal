@@ -12,11 +12,11 @@ const TONE_DIAL = ["Professional", "Balanced", "Casual"] as const;
 type ToneDial = typeof TONE_DIAL[number];
 
 const PLATFORM_META: Record<string, { color: string; bg: string; border: string; icon: string; short: string }> = {
-  "Twitter/X":  { color: "#38bdf8", bg: "rgba(56,189,248,0.12)",  border: "rgba(56,189,248,0.3)",  icon: "𝕏",  short: "X" },
-  "LinkedIn":   { color: "#60a5fa", bg: "rgba(96,165,250,0.12)",  border: "rgba(96,165,250,0.3)",  icon: "in", short: "LI" },
-  "Instagram":  { color: "#f472b6", bg: "rgba(244,114,182,0.12)", border: "rgba(244,114,182,0.3)", icon: "◉",  short: "IG" },
-  "Facebook":   { color: "#818cf8", bg: "rgba(129,140,248,0.12)", border: "rgba(129,140,248,0.3)", icon: "f",  short: "FB" },
-  "TikTok":     { color: "#a78bfa", bg: "rgba(167,139,250,0.12)", border: "rgba(167,139,250,0.3)", icon: "♪",  short: "TT" },
+  "Twitter/X":  { color: "#bae6fd", bg: "rgba(56,189,248,0.25)",  border: "rgba(56,189,248,0.4)",  icon: "𝕏",  short: "X" },
+  "LinkedIn":   { color: "#bfdbfe", bg: "rgba(96,165,250,0.25)",  border: "rgba(96,165,250,0.4)",  icon: "in", short: "LI" },
+  "Instagram":  { color: "#fce7f3", bg: "rgba(244,114,182,0.25)", border: "rgba(244,114,182,0.4)", icon: "◉",  short: "IG" },
+  "Facebook":   { color: "#e0e7ff", bg: "rgba(129,140,248,0.25)", border: "rgba(129,140,248,0.4)", icon: "f",  short: "FB" },
+  "TikTok":     { color: "#ede9fe", bg: "rgba(167,139,250,0.25)", border: "rgba(167,139,250,0.4)", icon: "♪",  short: "TT" },
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -206,8 +206,8 @@ function PostCard({ post, index, showAnalytics, onSchedule }: { post: PostIdea; 
               <button key={p} onClick={() => setPreviewPlatform(p)}
                 className="btn-press text-[10px] px-2 py-1 rounded-lg border transition-all font-semibold"
                 style={{
-                  color: isActive ? (tabMeta?.color ?? '#86efac') : 'rgba(255,255,255,0.3)',
-                  background: isActive ? (tabMeta?.bg ?? 'rgba(34,197,94,0.1)') : 'transparent',
+                  color: isActive ? '#ffffff' : 'rgba(255,255,255,0.55)',
+                  background: isActive ? (tabMeta?.bg ?? 'rgba(34,197,94,0.30)') : 'transparent',
                   borderColor: isActive ? (tabMeta?.border ?? 'rgba(34,197,94,0.3)') : 'rgba(255,255,255,0.06)',
                 }}>
                 {p}
