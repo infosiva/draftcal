@@ -145,7 +145,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {!isWidgetHidden(theme, 'stickyFooterCTA') && <StickyFooterCTA />}
         <FloatingChatWrapper />
         <Script defer data-domain="draftcal.app" src="https://plausible.io/js/script.js" strategy="afterInteractive" />
-        <Script defer data-site="draftcal.app" src="http://31.97.56.148:3098/t.js" strategy="afterInteractive" />
         <FeedbackWidget siteName="DraftCal" accentColor="#d97706" position="left" />
       </body>
     </html>
