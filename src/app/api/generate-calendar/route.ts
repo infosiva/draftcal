@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { callAI } from "@/lib/ai";
+import { AI_LIMITER } from '@/lib/rateLimit'
 
 const PLATFORM_TIPS: Record<string, { best_times: string[]; max_hashtags: number; format_tip: string }> = {
   "Twitter/X":  { best_times: ["9:00","12:00","17:00"], max_hashtags: 3, format_tip: "Keep under 280 chars. Use thread format for long content." },
@@ -10,6 +11,8 @@ const PLATFORM_TIPS: Record<string, { best_times: string[]; max_hashtags: number
 }
 
 export async function POST(req: NextRequest) {
+  const limited = AI_LIMITER.check(req); if (limited) return limited
+
   try {
     const { topic, platforms, tone, weeks } = await req.json();
     const postsPerWeek = platforms.length * 3;

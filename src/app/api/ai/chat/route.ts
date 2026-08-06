@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { AI_LIMITER } from '@/lib/rateLimit'
 
 export const maxDuration = 60
 
 export async function POST(req: NextRequest) {
+  const limited = AI_LIMITER.check(req); if (limited) return limited
+
   const { messages } = await req.json()
   const userMsg = messages?.[messages.length - 1]?.content || ''
 
