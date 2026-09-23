@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${groqKey}` },
       body: JSON.stringify({
-        model: 'llama-3.1-8b-instant',
+        model: 'qwen/qwen3.8-27b',
         messages: [
           { role: 'system', content: 'You are a helpful AI assistant for this application. Keep responses concise and helpful.' },
           { role: 'user', content: userMsg },

@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${groqKey}` },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model: 'openai/gpt-oss-20b',
         messages: [{ role: 'system', content: systemPrompt }, ...messages],
         max_tokens: 600,
         temperature: 0.7,
