@@ -5,6 +5,7 @@ import RegisterGate from '@/lib/shared/RegisterGate'
 import { siteConfig } from '@/site.config'
 import type { ContentOverrides } from '@/lib/content'
 import LiveStatsBar from '@/components/LiveStatsBar'
+import { MagneticButton } from '@infosiva/shared-ui/modern'
 
 // ── Platform config ──────────────────────────────────────────────────────────
 const PLATFORMS = ["Twitter/X", "LinkedIn", "Instagram", "Facebook", "TikTok"];
@@ -651,7 +652,7 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
                       fontSize: '0.9375rem',
                     }}
                   />
-                  <button
+                  <MagneticButton
                     onClick={handleHeroGenerate}
                     disabled={!heroNiche || loading}
                     className="hero-btn-orange w-full py-4 rounded-xl font-black text-base"
@@ -663,7 +664,7 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
                     }}
                   >
                     {loading ? 'Generating…' : 'Generate my calendar free →'}
-                  </button>
+                  </MagneticButton>
                   <button
                     onClick={() => setShowProModal(true)}
                     className="hero-btn-ghost w-full py-3 rounded-xl font-semibold text-sm"
