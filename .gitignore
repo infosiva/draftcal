@@ -3,3 +3,5 @@ node_modules
 .gstack/
 .env*
 !.env.example
+.next
+tsconfig.tsbuildinfo
