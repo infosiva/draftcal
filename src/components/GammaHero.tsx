@@ -57,7 +57,6 @@ export default function GammaHero() {
       labelBadge="AI"
       placeholder="Content calendar for a SaaS startup, LinkedIn + Twitter, 2 weeks, professional tone..."
       onSubmit={handlePrompt}
-      bgImage="/hero-bg.png"
       bgGradient="linear-gradient(135deg, #0a1628 0%, #0f1f3d 50%, #060e1f 100%)"
       accentColor="#2563eb"
       suggestions={SUGGESTIONS}
