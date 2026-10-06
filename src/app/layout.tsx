@@ -12,7 +12,6 @@ import BackToTop from '@/components/BackToTop'
 import FloatingChatWrapper from '@/components/FloatingChatWrapper'
 import type { BrandConfig } from '@/components/SharedNavbar'
 import CookieConsent from "../../components/CookieConsent"
-import StickyFooterCTA from "../../components/StickyFooterCTA"
 import { siteConfig } from '@/site.config'
 import { loadSiteTheme, buildThemeStyleTag, isWidgetHidden } from '@/lib/theme-loader'
 
@@ -143,7 +142,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {flags.chatbot && !isWidgetHidden(theme, 'chatbot') && <ChatBot />}
         {!isWidgetHidden(theme, 'backToTop') && <BackToTop accentColor="#d97706" />}
         {!isWidgetHidden(theme, 'cookieConsent') && <CookieConsent />}
-        {!isWidgetHidden(theme, 'stickyFooterCTA') && <StickyFooterCTA />}
         <FloatingChatWrapper />
         <Script defer data-domain="draftcal.app" src="https://plausible.io/js/script.js" strategy="afterInteractive" />
         <FeedbackWidget siteName="DraftCal" accentColor="#d97706" position="left" />
