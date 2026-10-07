@@ -779,3 +779,52 @@ pre {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
+
+/* ===== gate item 21 visual pass (2026-10-07): aurora, gradient accents, motion, targets, fit-in-viewport ===== */
+.dc-aurora{background:#fffaf5 !important;isolation:isolate}
+.dc-aurora::before,.dc-aurora::after{content:"";position:fixed;z-index:0;pointer-events:none;border-radius:50%;filter:blur(70px);opacity:.55;will-change:transform}
+.dc-aurora::before{width:55vw;height:55vw;max-width:720px;max-height:720px;top:-12%;left:-10%;background:radial-gradient(circle at 30% 30%,#fdba74,#f9a8d4 55%,transparent 72%);animation:dcAurora 18s ease-in-out infinite alternate}
+.dc-aurora::after{width:50vw;height:50vw;max-width:640px;max-height:640px;bottom:-15%;right:-8%;background:radial-gradient(circle at 60% 40%,#c4b5fd,#fbcfe8 55%,transparent 72%);animation:dcAurora 24s ease-in-out infinite alternate-reverse}
+@keyframes dcAurora{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(6vw,4vh,0) scale(1.18)}}
+@keyframes dcRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes dcSheen{to{background-position:200% 0}}
+@keyframes dcGlow{50%{box-shadow:0 18px 50px rgba(236,72,153,.34),0 6px 18px rgba(249,115,22,.3)}}
+
+/* hierarchy + gradient accent (stops all >= 4.5:1 on the light surface) */
+.hero-editorial h1 span{background:linear-gradient(100deg,#c2410c,#be185d 55%,#6d28d9);-webkit-background-clip:text;background-clip:text;color:transparent !important;-webkit-text-fill-color:transparent}
+.hero-editorial .grid>:first-child>*{animation:dcRise .6s cubic-bezier(.23,1,.32,1) both}
+.hero-editorial .grid>:first-child>:nth-child(2){animation-delay:60ms}
+.hero-editorial .grid>:first-child>:nth-child(3){animation-delay:120ms}
+.hero-editorial .grid>:first-child>:nth-child(4){animation-delay:180ms}
+.hero-editorial .grid>:first-child>:nth-child(n+5){animation-delay:240ms}
+.hero-editorial .grid>:last-child{animation:dcRise .7s cubic-bezier(.23,1,.32,1) .2s both}
+.hero-editorial .grid>:last-child>*{box-shadow:0 24px 70px rgba(190,24,93,.18),0 6px 20px rgba(109,40,217,.12);backdrop-filter:blur(6px);background:rgba(255,255,255,.88)}
+
+/* single CTA: gradient, readable even before input (disabled state kept for logic) */
+.hero-btn-orange{background:linear-gradient(100deg,#b45309,#be185d 60%,#6d28d9) !important;background-size:200% 100% !important;color:#fff !important;min-height:52px;transition:transform .16s cubic-bezier(.23,1,.32,1),box-shadow .2s}
+.hero-btn-orange:disabled{opacity:.88 !important;cursor:not-allowed !important}
+.hero-btn-orange:not(:disabled){animation:dcGlow 2.6s ease-in-out infinite,dcSheen 5s linear infinite;cursor:pointer !important}
+.hero-btn-orange:not(:disabled):hover{transform:translateY(-1px)}
+.hero-editorial button:active,.hero-editorial .platform-icon:active,header a:active,header button:active{transform:scale(.97) !important;transition-duration:.1s}
+
+/* 44px touch targets */
+.hero-editorial button,.hero-editorial input:not([type=checkbox]){min-height:44px}
+header a,header button,.dc-aurora a[href*="promo"]{min-height:44px;display:inline-flex;align-items:center}
+
+/* demo legibility: no sub-9px text */
+.hero-editorial .text-\[8px\]{font-size:9px !important}
+
+/* fit in viewport: compact hero, demo peeks on phones */
+@media (max-width:1023px){
+  .hero-editorial{padding-top:1rem !important;padding-bottom:1rem !important}
+  .hero-editorial .grid{gap:1rem !important}
+}
+@media (max-width:640px){
+  .hero-editorial .grid p.text-lg,.hero-editorial .grid p[style*="1.0625rem"],.hero-editorial .grid .flex.items-center.gap-2.flex-wrap{display:none}
+  .hero-editorial h1{font-size:1.9rem !important;margin-bottom:.75rem !important}
+}
+@media (min-width:1024px){ .hero-editorial{padding-top:2.5rem !important;padding-bottom:1.5rem !important} }
+@media (prefers-reduced-motion:reduce){
+  .dc-aurora::before,.dc-aurora::after,.hero-btn-orange{animation:none !important}
+  .hero-editorial .grid>*,.hero-editorial .grid>:first-child>*{animation:none !important}
+}

@@ -546,7 +546,7 @@ export default function DraftCalPage({ overrides }: { overrides: ContentOverride
         }
       `}</style>
 
-      <div className="min-h-screen relative overflow-x-hidden" style={{ background: '#fafafa' }}>
+      <div className="dc-aurora min-h-screen relative overflow-x-hidden" style={{ background: '#fafafa' }}>
 
         {/* Subtle orange radial in top-right corner only */}
         <div

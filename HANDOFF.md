@@ -18,3 +18,12 @@
 - Moves: AnimatedBackground (ambient hero/background); CSS keyframes: badgeFloat, blink, borderSpin, calCellIn, db-bounce, db-slide, db-slide-bottom, fadeIn; transitions on interactive elements.
 - Trigger: page load (ambient) and hover/press (interactive). Reduced motion: honoured via prefers-reduced-motion block.
 - STATUS: scope documented from existing code only. Skill-stack passes (ui-ux-pro-max, emil-design-eng, impeccable critique, review-animations) and 375/1280 screenshot review are NOT yet run for this app. Item 21 stays OPEN until they are.
+
+## Item 21 visual pass (2026-10-07)
+- Done: aurora bg, gradient h1 accents + gradient CTA, rise/sheen/glow entry motion, :active scale(.97), 44px targets, reduced-motion block, animated calendar demo (calCellIn). CSS-only, no deps.
+- Screenshots read: 375x812 and 1280x800, no horizontal scroll (sw=cw). CTA above fold on both.
+- Skills invoked as tools: taste-skill, emil-design-eng, animate, fixing-accessibility.
+- TODO: invoke ui-ux-pro-max as a tool (not run; applied by rule only).
+- TODO: run impeccable audit (not run).
+- TODO: mobile page is 5766px tall below hero (fit-in-viewport only met for the hero); cookie banner/feedback FAB overlap the fold.
+- SKILL-STACK: not done (ui-ux-pro-max + impeccable audit pending)
