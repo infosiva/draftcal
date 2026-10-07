@@ -13,7 +13,7 @@ import FloatingChatWrapper from '@/components/FloatingChatWrapper'
 import type { BrandConfig } from '@/components/SharedNavbar'
 import CookieConsent from "../../components/CookieConsent"
 import { siteConfig } from '@/site.config'
-import { loadSiteTheme, buildThemeStyleTag, isWidgetHidden } from '@/lib/theme-loader'
+import { loadSiteTheme, buildThemeStyleTag, buildGa4Snippet, isWidgetHidden } from '@/lib/theme-loader'
 
 import { MotionProvider } from "@infosiva/shared-ui/modern";
 const brand: BrandConfig = {
@@ -91,9 +91,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     secondary: '#b45309',
   })
 
+  const ga4 = buildGa4Snippet(theme)
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {ga4 && <script async src={`https://www.googletagmanager.com/gtag/js?id=${theme?.analytics?.ga4Id}`} />}
+        {ga4 && <script dangerouslySetInnerHTML={{ __html: ga4 }} />}
         <meta name="google-adsense-account" content="ca-pub-4237294630161176" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppJsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />

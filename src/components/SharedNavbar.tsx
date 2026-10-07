@@ -1,19 +1,12 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { Logo } from './Logo'
 
 export interface NavLink { label: string; href: string; external?: boolean }
 export interface BrandConfig {
   name: string; tagline: string; icon: string; color: string; url: string
   navLinks?: NavLink[]; cta?: { label: string; href: string }
-}
-
-function LogoMark() {
-  return (
-    <span aria-hidden className="inline-flex h-7 w-7 items-center justify-center rounded-lg transition-transform duration-200 group-hover:scale-110" style={{ background: 'linear-gradient(135deg,#b45309,#d97706)' }}>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="white" strokeWidth="2"/><path d="M3 10h18M8 2.5v5M16 2.5v5" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg>
-    </span>
-  )
 }
 
 export default function SharedNavbar({ brand }: { brand: BrandConfig }) {
@@ -48,7 +41,7 @@ export default function SharedNavbar({ brand }: { brand: BrandConfig }) {
         <div className="max-w-5xl mx-auto px-5 sm:px-8 h-14 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group select-none">
-            <LogoMark />
+            <Logo />
             <span className="font-semibold text-sm tracking-tight" style={{ color: '#111111' }}>
               {brand.name}
             </span>
@@ -116,7 +109,7 @@ export default function SharedNavbar({ brand }: { brand: BrandConfig }) {
         >
           <div className="px-5 pt-5 pb-4 flex items-center justify-between border-b" style={{ borderColor: '#f1f5f9' }}>
             <Link href="/" onClick={() => setOpen(false)} className="flex items-center gap-2">
-              <LogoMark />
+              <Logo />
               <span className="font-semibold text-sm" style={{ color: '#111111' }}>{brand.name}</span>
             </Link>
             <button onClick={() => setOpen(false)} className="p-1.5 transition-colors" style={{ color: '#94a3b8' }}>
